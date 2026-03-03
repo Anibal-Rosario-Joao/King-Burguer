@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">KingBurguer</string>
+    <string name="email">E-mail</string>
+    <string name="hint_email">Digite o seu e-mail</string>
+    <string name="password">Senha</string>
+    <string name="hint_password">Digite a sua senha</string>
+    <string name="send">Enviar</string>
+</resources>
