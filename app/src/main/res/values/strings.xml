@@ -5,4 +5,6 @@
     <string name="password">Senha</string>
     <string name="hint_password">Digite a sua senha</string>
     <string name="send">Enviar</string>
+    <string name="show_password">Mostrar senha</string>
+    <string name="hide_password">Esconder senha</string>
 </resources>
