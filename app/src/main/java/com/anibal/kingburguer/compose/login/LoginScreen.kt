@@ -1,9 +1,8 @@
 package com.anibal.kingburguer.compose.login
 
 
-import android.graphics.Color
+
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +19,11 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.anibal.kingburguer.R
@@ -45,15 +45,21 @@ import com.anibal.kingburguer.component.KingTextField
 import com.anibal.kingburguer.component.KingTextTitle
 import com.anibal.kingburguer.compose.Screen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
+import com.anibal.kingburguer.viewmodels.LoginViewModel
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(
+    navController: NavHostController,
+    viewModel: LoginViewModel = viewModel()
+) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
 
         val scrollState = rememberScrollState()
         var passwordHidden by remember { mutableStateOf(true) }
+
+        val uiState by viewModel.uiState.collectAsState()
 
         Column(
             modifier = Modifier
@@ -68,12 +74,23 @@ fun LoginScreen(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Top)
             ) {
+                if(uiState.isLoading){
+                    KingTextTitle("Esta carregando")
+                }else if(uiState.goToHome){
+                    navController.navigate(Screen.HOME.route)
+                }else if(uiState.error != null){
+                    KingTextTitle(text = uiState.error!!)
+                }
+                else{
+                    KingTextTitle("Esta ocioso")
+                }
+
                 KingTextTitle(
                     text = stringResource(R.string.login)
                 )
 
                 KingTextField(
-                    value = "todo",
+                    value = viewModel.email,
                     label = R.string.email,
                     placeholder = R.string.hint_email,
                     keyboardType = KeyboardType.Email,
@@ -83,7 +100,7 @@ fun LoginScreen(navController: NavHostController) {
                 }
 
                 KingTextField(
-                    value = "todo",
+                    value = viewModel.password,
                     label = R.string.password,
                     placeholder = R.string.hint_password,
                     keyboardType = KeyboardType.Password,
@@ -137,6 +154,7 @@ fun LoginScreen(navController: NavHostController) {
 
                     ) {
                     //Evento de onClick()
+                   // viewModel.send()
                 }
 
                 Row(
@@ -176,10 +194,18 @@ fun LoginScreen(navController: NavHostController) {
 
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreenPreview() {
-    KingBurguerTheme {
+fun LoginScreenLightPreview() {
+    KingBurguerTheme (dynamicColor = false){
+        LoginScreen(rememberNavController())
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginScreenDarkPreview() {
+    KingBurguerTheme (dynamicColor = false, darkTheme = true){
         LoginScreen(rememberNavController())
     }
 }

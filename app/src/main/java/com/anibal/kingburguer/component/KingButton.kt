@@ -34,7 +34,7 @@ fun KingButton(
 @Preview(showBackground = true)
 @Composable
 fun KingButtonPreview() {
-    KingBurguerTheme {
+    KingBurguerTheme(dynamicColor=false) {
         KingButton("Hello World"){
 
         }
