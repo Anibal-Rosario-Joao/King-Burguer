@@ -12,4 +12,5 @@
     <string name="have_account">Não tem uma conta?</string>
     <string name="sign_up">Cadastrar</string>
     <string name="burguer">Hamburguer</string>
+    <string name="icon_alert">Icon de Alerta</string>
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Checkbox
@@ -40,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.anibal.kingburguer.R
+import com.anibal.kingburguer.component.KingAlert
 import com.anibal.kingburguer.component.KingButton
 import com.anibal.kingburguer.component.KingTextField
 import com.anibal.kingburguer.component.KingTextTitle
@@ -74,15 +76,19 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Top)
             ) {
-                if(uiState.isLoading){
-                    KingTextTitle("Esta carregando")
-                }else if(uiState.goToHome){
-                    navController.navigate(Screen.HOME.route)
-                }else if(uiState.error != null){
-                    KingTextTitle(text = uiState.error!!)
-                }
-                else{
-                    KingTextTitle("Esta ocioso")
+
+                uiState.error?.let {
+                    KingAlert(
+                        onDismissRequest = {
+                           //TODO
+                        },
+                        confirmationButton = {
+                            viewModel.reset()
+                        },
+                        dialogTitle = stringResource(R.string.app_name),
+                        dialogText = uiState.error!!,
+                        icon = Icons.Filled.Info
+                    )
                 }
 
                 KingTextTitle(
@@ -154,7 +160,7 @@ fun LoginScreen(
 
                     ) {
                     //Evento de onClick()
-                   // viewModel.send()
+                    viewModel.send()
                 }
 
                 Row(
