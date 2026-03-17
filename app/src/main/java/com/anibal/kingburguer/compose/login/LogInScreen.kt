@@ -47,12 +47,12 @@ import com.anibal.kingburguer.component.KingTextField
 import com.anibal.kingburguer.component.KingTextTitle
 import com.anibal.kingburguer.compose.Screen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
-import com.anibal.kingburguer.viewmodels.LoginViewModel
+import com.anibal.kingburguer.viewmodels.LogInViewModel
 
 @Composable
-fun LoginScreen(
+fun LogInScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LogInViewModel = viewModel()
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -176,11 +176,11 @@ fun LoginScreen(
                     TextButton(
                         onClick = {
                             //TODO
-                            navController.navigate(Screen.HOME.route)
+                            navController.navigate(Screen.SIGUP.route)
                         }
                     ) {
                         Text(
-                            text = stringResource(R.string.sign_up)
+                            text = stringResource(R.string.sign_up_action)
                         )
                     }
                 }
@@ -202,16 +202,16 @@ fun LoginScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreenLightPreview() {
+fun LogInScreenLightPreview() {
     KingBurguerTheme (dynamicColor = false){
-        LoginScreen(rememberNavController())
+        LogInScreen(rememberNavController())
     }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreenDarkPreview() {
+fun LogInScreenDarkPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = true){
-        LoginScreen(rememberNavController())
+        LogInScreen(rememberNavController())
     }
 }
