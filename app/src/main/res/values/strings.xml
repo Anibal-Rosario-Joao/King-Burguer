@@ -13,4 +13,13 @@
     <string name="sign_up">Cadastrar</string>
     <string name="burguer">Hamburguer</string>
     <string name="icon_alert">Icon de Alerta</string>
+    <string name="name">Name</string>
+    <string name="hint_name">Digite o seu nome</string>
+    <string name="sign_up_action">Cadastrar-se</string>
+    <string name="confirm_password">Confirmar senha</string>
+    <string name="hint_confirm_password">Confirme a senha novamente!</string>
+    <string name="document">NUIT</string>
+    <string name="hint_document">Digite o seu NUIT</string>
+    <string name="birthday">Data de nascimento</string>
+    <string name="hint_birthday">Digite a sua data de nascimento</string>
 </resources>
