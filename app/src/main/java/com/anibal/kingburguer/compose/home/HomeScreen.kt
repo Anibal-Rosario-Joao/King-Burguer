@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -24,16 +21,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.anibal.kingburguer.component.KingButton
-import com.anibal.kingburguer.component.KingTextTitle
-import com.anibal.kingburguer.compose.Screen
-import com.anibal.kingburguer.compose.login.LoginScreen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
-import com.anibal.kingburguer.viewmodels.LoginViewModel
+import com.anibal.kingburguer.viewmodels.LogInViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LogInViewModel = viewModel()
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
