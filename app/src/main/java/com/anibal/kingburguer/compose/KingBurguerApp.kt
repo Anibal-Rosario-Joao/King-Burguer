@@ -6,7 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anibal.kingburguer.compose.home.HomeScreen
-import com.anibal.kingburguer.compose.login.LoginScreen
+import com.anibal.kingburguer.compose.login.LogInScreen
+import com.anibal.kingburguer.compose.signup.SignUpScreen
 
 @Composable
 fun KingBurguerApp() {
@@ -23,10 +24,10 @@ fun KingBurguerNavHost(navController: NavHostController) {
         startDestination = Screen.LOGIN.route
     ) {
         composable(Screen.LOGIN.route) {
-            LoginScreen(navController)
+            LogInScreen(navController)
         }
-        composable(Screen.HOME.route) {
-            HomeScreen(navController)
+        composable(Screen.SIGUP.route) {
+            SignUpScreen(navController = navController)
         }
     }
 
