@@ -3,27 +3,26 @@ package com.anibal.kingburguer.compose.signup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.anibal.kingburguer.R
@@ -46,44 +44,65 @@ import com.anibal.kingburguer.component.KingAlert
 import com.anibal.kingburguer.component.KingButton
 import com.anibal.kingburguer.component.KingTextField
 import com.anibal.kingburguer.component.KingTextTitle
-import com.anibal.kingburguer.compose.Screen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 import com.anibal.kingburguer.viewmodels.SignUpViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
     viewModel: SignUpViewModel = viewModel(),
-    navController:  NavHostController
+    navController:  NavHostController,
+    onNavigationClick: () -> Unit,
+    onNavigateToHome: () -> Unit
 ){
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
         Scaffold(
-
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(text = stringResource(R.string.login))
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = onNavigationClick
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                )
+            }
         ) { contentPadding ->
+            Surface(
+                modifier = Modifier
+                    .padding(top = contentPadding.calculateTopPadding())
+            ) {
 
-            SignUpContentScreen(
-                viewModel = viewModel,
-                navController = navController,
-                modifier = Modifier.padding(top = contentPadding.calculateTopPadding())
-            )
+                SignUpContentScreen(
+                    viewModel = viewModel,
+                    navController = navController,
+                    onNavigationClick = onNavigationClick,
+                    onNavigateToHome = onNavigateToHome
+                )
+            }
         }
-    }
 
 }
 
 @Composable
-fun SignUpContentScreen(
-    viewModel : SignUpViewModel ,
+private fun SignUpContentScreen(
+    viewModel : SignUpViewModel,
     navController: NavHostController,
-    modifier: Modifier
+    onNavigationClick: () -> Unit,
+    onNavigateToHome: () -> Unit
 ){
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
         val scrollState = rememberScrollState()
         var passwordHidden by remember { mutableStateOf(true) }
 
@@ -98,7 +117,17 @@ fun SignUpContentScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Top)
             ) {
+                // Importanta para o uso do botao de voltar Empilhamento de telas
+                LaunchedEffect(key1 = uiState.goToHome) {
+                    if(uiState.goToHome){
+                        onNavigateToHome()
+                        viewModel.reset()
+                    }
+                }
 
+                if(uiState.goToHome){
+                    onNavigateToHome()
+                }
                 uiState.error?.let {
                     KingAlert(
                         onDismissRequest = {
@@ -112,7 +141,6 @@ fun SignUpContentScreen(
                         icon = Icons.Filled.Info
                     )
                 }
-                Spacer(modifier = Modifier.padding(top = 24.dp))
                 KingTextTitle(
                     text = stringResource(R.string.sign_up)
                 )
@@ -226,11 +254,13 @@ fun SignUpContentScreen(
 
                 KingButton(
                     text = stringResource(R.string.send),
+                    enabled = true,
+                    loading = uiState.isLoading,
+                    onClick = {
+                        viewModel.send()
+                    }
 
-                    ) {
-                    //Evento de onClick()
-                    viewModel.send()
-                }
+                    )
             }
 
             Image(
@@ -242,7 +272,7 @@ fun SignUpContentScreen(
             )
 
 
-        }
+
     }
 
 }
@@ -251,7 +281,11 @@ fun SignUpContentScreen(
 @Composable
 fun SignUpnScreenLightPreview() {
     KingBurguerTheme (dynamicColor = false){
-        SignUpScreen(navController = rememberNavController())
+        SignUpScreen(
+            navController = rememberNavController(),
+            onNavigationClick = {},
+            onNavigateToHome = {}
+        )
     }
 }
 
@@ -259,6 +293,10 @@ fun SignUpnScreenLightPreview() {
 @Composable
 fun SignUpScreenDarkPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = true){
-        SignUpScreen(navController = rememberNavController())
+        SignUpScreen(
+            navController = rememberNavController(),
+            onNavigationClick = {},
+            onNavigateToHome = {}
+        )
     }
 }

@@ -45,10 +45,10 @@ class SignUpViewModel: ViewModel() {
         viewModelScope.launch {
             delay(3000)
             //Sucesso
-            // _uiState.update { it.copy(isLoading = false,goToHome = true) }
+             _uiState.update { it.copy(isLoading = false,goToHome = true) }
 
             //Falha
-            _uiState.update { it.copy(isLoading = false, error = "Usuario não encontrado!") }
+           // _uiState.update { it.copy(isLoading = false, error = "Usuario não encontrado!") }
         }
     }
 }

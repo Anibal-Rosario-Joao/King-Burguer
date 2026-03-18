@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,7 @@ import com.anibal.kingburguer.viewmodels.LogInViewModel
 @Composable
 fun LogInScreen(
     navController: NavHostController,
+    onNavigateToHome: () -> Unit,
     viewModel: LogInViewModel = viewModel()
 ) {
     Scaffold(
@@ -76,6 +78,13 @@ fun LogInScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Top)
             ) {
+                // Importanta para o uso do botao de voltar Empilhamento de telas
+                LaunchedEffect(key1 = uiState.goToHome) {
+                    if(uiState.goToHome){
+                        onNavigateToHome()
+                        viewModel.reset()
+                    }
+                }
 
                 uiState.error?.let {
                     KingAlert(
@@ -157,11 +166,12 @@ fun LogInScreen(
 
                 KingButton(
                     text = stringResource(R.string.send),
-
-                    ) {
-                    //Evento de onClick()
-                    viewModel.send()
-                }
+                    enabled = true,
+                    loading = uiState.isLoading,
+                    onClick =  {
+                        viewModel.send()
+                    }
+                )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -204,7 +214,10 @@ fun LogInScreen(
 @Composable
 fun LogInScreenLightPreview() {
     KingBurguerTheme (dynamicColor = false){
-        LogInScreen(rememberNavController())
+        LogInScreen(
+            navController =  rememberNavController(),
+            onNavigateToHome = {}
+            )
     }
 }
 
@@ -212,6 +225,9 @@ fun LogInScreenLightPreview() {
 @Composable
 fun LogInScreenDarkPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = true){
-        LogInScreen(rememberNavController())
+        LogInScreen(
+            navController = rememberNavController(),
+            onNavigateToHome = {}
+            )
     }
 }

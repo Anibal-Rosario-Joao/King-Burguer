@@ -3,82 +3,61 @@ package com.anibal.kingburguer.compose.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.anibal.kingburguer.component.KingButton
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
-import com.anibal.kingburguer.viewmodels.LogInViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModel: LogInViewModel = viewModel()
+   // viewModel: HomeViewModel = viewModel()
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
-
-       // val uiState by viewModel.uiState.collectAsState()
-        Column(
+    ) { contentPadding ->
+        Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .padding(top = contentPadding.calculateTopPadding())
         ) {
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(horizontal = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Top)
-            ) {
-
-                Text(
-                    text = "Home Screen".uppercase(),
-                    fontSize = 34.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp)
-                )
-                KingButton(
-                    text = "Go to Login"
-                ) {
-                   // viewModel.reset()
-                   // navController.navigate(Screen.LOGIN.route)
-
-                }
-            }
-
+            HomeContentScreen(
+             //   viewModel = viewModel,
+                navController = navController
+            )
         }
     }
 }
 
-@Preview
+@Composable
+private fun HomeContentScreen(
+  //  viewModel : HomeViewModel ,
+    navController: NavHostController
+){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Home Screen".uppercase())
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreenLigthPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
         HomeScreen(rememberNavController())
     }
 }
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreenDarkPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = true){
