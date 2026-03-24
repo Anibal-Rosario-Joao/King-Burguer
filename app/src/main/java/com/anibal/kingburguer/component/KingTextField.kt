@@ -26,6 +26,7 @@ fun KingTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
     offuscate: Boolean = false,
+    error: String? = null,
     modifier: Modifier = Modifier,
     trailingIcon: @Composable (() -> Unit)? = null,
     onValueChange: (String) -> Unit
@@ -44,6 +45,12 @@ fun KingTextField(
             Text(
                 text = stringResource(placeholder)
             )
+        },
+        isError = error != null,
+        supportingText = {
+            error?.let{ msg ->
+                Text(msg)
+            }
         },
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType,
@@ -67,6 +74,7 @@ fun KingTextFieldPreview() {
           placeholder = R.string.hint_email,
           keyboardType = KeyboardType.Email,
           imeAction = ImeAction.Next,
+          error = "Erro de Teste",
           modifier = Modifier.padding(horizontal = 20.dp)
       ) { }
     }

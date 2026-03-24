@@ -145,31 +145,34 @@ private fun SignUpContentScreen(
                     text = stringResource(R.string.sign_up)
                 )
                 KingTextField(
-                    value = viewModel.name,
+                    value = viewModel.formState.name.field,
                     label = R.string.name,
                     placeholder = R.string.hint_name,
                     keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ) {
-
+                    imeAction = ImeAction.Next,
+                    error = viewModel.formState.name.error
+                ) { labelName ->
+                    viewModel.updateName(labelName)
                 }
 
                 KingTextField(
-                    value = viewModel.email,
+                    value = viewModel.formState.email.field,
                     label = R.string.email,
                     placeholder = R.string.hint_email,
                     keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ) {
-
+                    imeAction = ImeAction.Next,
+                    error = viewModel.formState.email.error
+                ) { labelEmail ->
+                    viewModel.updateEmail(labelEmail)
                 }
 
                 KingTextField(
-                    value = viewModel.password,
+                    value = viewModel.formState.password.field,
                     label = R.string.password,
                     placeholder = R.string.hint_password,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Next,
+                    error = viewModel.formState.password.error,
                     offuscate = passwordHidden,
                     trailingIcon = {
                         IconButton(
@@ -194,16 +197,17 @@ private fun SignUpContentScreen(
                             )
                         }
                     }
-                ) {
-                    //Evento de onValueChange()
+                ) { labelPassword ->
+                    viewModel.updatePassword(labelPassword)
                 }
 
                 KingTextField(
-                    value = viewModel.confirmPassword,
+                    value = viewModel.formState.confirmPassword.field,
                     label = R.string.confirm_password,
                     placeholder = R.string.hint_confirm_password,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Next,
+                    error = viewModel.formState.confirmPassword.error,
                     offuscate = passwordHidden,
                     trailingIcon = {
                         IconButton(
@@ -228,12 +232,12 @@ private fun SignUpContentScreen(
                             )
                         }
                     }
-                ) {
-                    //Evento de onValueChange()
+                ) { labelConfirmPassword ->
+                        viewModel.updateConfirmPassaword(labelConfirmPassword)
                 }
 
                 KingTextField(
-                    value = viewModel.document,
+                    value = "",
                     label = R.string.document,
                     placeholder = R.string.hint_document,
                     keyboardType = KeyboardType.Number,
@@ -243,7 +247,7 @@ private fun SignUpContentScreen(
                 }
 
                 KingTextField(
-                    value = viewModel.birthDay,
+                    value = "",
                     label = R.string.birthday,
                     placeholder = R.string.hint_birthday,
                     keyboardType = KeyboardType.Number,
