@@ -10,5 +10,6 @@ data class FormState(
     var name: FieldState = FieldState(),
     var email: FieldState = FieldState(),
     var password: FieldState = FieldState(),
-    var confirmPassword: FieldState = FieldState()
+    var confirmPassword: FieldState = FieldState(),
+    var document: FieldState = FieldState()
 )

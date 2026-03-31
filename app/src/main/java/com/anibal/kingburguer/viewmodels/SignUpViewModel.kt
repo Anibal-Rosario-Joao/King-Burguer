@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.anibal.kingburguer.compose.signup.FieldState
 import com.anibal.kingburguer.compose.signup.FormState
 import com.anibal.kingburguer.compose.signup.SignUpState
+import com.anibal.kingburguer.validation.Mask
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -99,6 +100,29 @@ class SignUpViewModel: ViewModel() {
         // Aqui é o sucesso
         formState = formState.copy(
             email = FieldState(field = newEmail, error = null)
+        )
+    }
+
+    fun updateDocument(newDocument: String){
+        val pattern = "###.###.###-##"
+        val currentDocumment = formState.document.field
+        val result = Mask(pattern,currentDocumment, newDocument)
+
+        if (newDocument.isBlank()){
+            formState = formState.copy(
+                document = FieldState(field = result, error = "O campo não pode ser vazio")
+            )
+            return
+        }
+
+        if (result.length != pattern.length){
+            formState = formState.copy(
+                document = FieldState(field = result, error = "NUIT Inválido")
+            )
+            return
+        }
+        formState = formState.copy(
+            document = FieldState(field = result, error = null)
         )
     }
     fun reset(){

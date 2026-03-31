@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,8 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,7 +60,8 @@ fun SignUpScreen(
     onNavigationClick: () -> Unit,
     onNavigateToHome: () -> Unit
 ){
-        Scaffold(
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    Scaffold(
             topBar = {
                 TopAppBar(
                     title = {
@@ -76,13 +81,17 @@ fun SignUpScreen(
                         containerColor = MaterialTheme.colorScheme.primary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    ),
+                    scrollBehavior = scrollBehavior
                 )
             }
         ) { contentPadding ->
+
             Surface(
                 modifier = Modifier
+                    .fillMaxSize()
                     .padding(top = contentPadding.calculateTopPadding())
+
             ) {
 
                 SignUpContentScreen(
@@ -110,6 +119,7 @@ private fun SignUpContentScreen(
 
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(horizontal = 20.dp)
                 .verticalScroll(scrollState),
         ) {
@@ -237,13 +247,17 @@ private fun SignUpContentScreen(
                 }
 
                 KingTextField(
-                    value = "",
+                    value = TextFieldValue(
+                        text = viewModel.formState.document.field,
+                        selection = TextRange(viewModel.formState.document.field.length)
+                    ),
                     label = R.string.document,
                     placeholder = R.string.hint_document,
                     keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ) {
-
+                    imeAction = ImeAction.Next,
+                    error = viewModel.formState.document.error
+                ) { textFieldValue ->
+                    viewModel.updateDocument(textFieldValue.text)
                 }
 
                 KingTextField(
