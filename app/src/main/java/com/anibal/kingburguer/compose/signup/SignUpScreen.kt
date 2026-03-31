@@ -166,7 +166,7 @@ private fun SignUpContentScreen(
                 }
 
                 KingTextField(
-                    value = viewModel.formState.email.field,
+                    value =  viewModel.formState.email.field,
                     label = R.string.email,
                     placeholder = R.string.hint_email,
                     keyboardType = KeyboardType.Email,
@@ -261,13 +261,16 @@ private fun SignUpContentScreen(
                 }
 
                 KingTextField(
-                    value = "",
+                    value = TextFieldValue(
+                        text = viewModel.formState.birthday.field,
+                        selection = TextRange(viewModel.formState.birthday.field.length)
+                    ),
                     label = R.string.birthday,
                     placeholder = R.string.hint_birthday,
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
-                ) {
-
+                ) { textFieldValue ->
+                    viewModel.updateBirthday(textFieldValue.text)
                 }
 
                 KingButton(

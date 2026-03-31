@@ -1,9 +1,11 @@
 package com.anibal.kingburguer.viewmodels
 
+import android.icu.text.SimpleDateFormat
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.net.ParseException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anibal.kingburguer.compose.signup.FieldState
@@ -16,6 +18,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.Locale
 
 class SignUpViewModel: ViewModel() {
     //Ocioso
@@ -131,6 +135,54 @@ class SignUpViewModel: ViewModel() {
         }
     }
 
+    fun updateBirthday(newBirthday: String){
+        val pattern = "##/##/####"
+        val currentBirthday = formState.birthday.field
+        val result = Mask(pattern,currentBirthday, newBirthday)
+
+        if (newBirthday.isBlank()){
+            formState = formState.copy(
+                birthday = FieldState(field = result, error = "O campo não pode ser vazio")
+            )
+            return
+        }
+
+        // o numero precisa ser igual da mascara = invalida
+        if(result.length != pattern.length){
+            formState = formState.copy(
+                birthday = FieldState(field = result, error = "Data de nascimento inválida")
+            )
+            return
+        }
+
+        //Não validar a data 30/02/2000
+        try {
+            val date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).run {
+                isLenient = false //  Não deixa pegar datas aproximada ou por aproximação
+                parse(result)
+            }?.also {
+                //Não validar a data futura
+                val now = Date()
+                if (it.after(now)){
+                    formState = formState.copy(
+                        birthday = FieldState(field = result, error = "Data de nascimento não ser maior que hoje")
+                    )
+                    return
+                }
+            }
+            formState = formState.copy(
+                birthday = FieldState(field = result, error = null)
+            )
+
+        }catch (e: ParseException){
+            //Não validar a data 30/02/2000
+            formState = formState.copy(
+                birthday = FieldState(field = result, error = "Data de nascimento inválida")
+            )
+            return
+        }
+
+    }
     fun send(){
         // depod os dados vão para o server
         _uiState.update {

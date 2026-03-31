@@ -1,6 +1,6 @@
 package com.anibal.kingburguer.validation
 
-fun Mask (pattern: String, currentDocument: String, newValue: String): String {
+fun Mask (pattern: String, current: String, newValue: String): String {
    val str = newValue.filter { it.isLetterOrDigit() }
 
     var result = ""
@@ -9,7 +9,7 @@ fun Mask (pattern: String, currentDocument: String, newValue: String): String {
         if (char != '#'){
             result += char
 
-            if (currentDocument > newValue && result.length >= newValue.length){
+            if (current > newValue && result.length >= newValue.length){
                 result = result.dropLast(1)
             }
             continue
