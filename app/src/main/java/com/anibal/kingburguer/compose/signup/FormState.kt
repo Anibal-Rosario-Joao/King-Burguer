@@ -1,10 +1,11 @@
 package com.anibal.kingburguer.compose.signup
 
+import com.anibal.kingburguer.validation.TextString
 import java.lang.reflect.Field
 
 data class FieldState(
     var field: String = "",
-    var error: String? = null
+    var error: TextString? = null
 )
 data class FormState(
     var name: FieldState = FieldState(),

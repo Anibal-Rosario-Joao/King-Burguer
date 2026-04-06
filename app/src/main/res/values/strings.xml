@@ -23,4 +23,6 @@
     <string name="birthday">Data de nascimento</string>
     <string name="hint_birthday">Digite a sua data de nascimento</string>
     <string name="back">Voltar</string>
+    <string name="error_email_black">O campo não pode ser vazio</string>
+    <string name="error_email_invalid">O campo invalido, verifique o e-mail</string>
 </resources>

@@ -160,7 +160,7 @@ private fun SignUpContentScreen(
                     placeholder = R.string.hint_name,
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
-                    error = viewModel.formState.name.error
+                    error = viewModel.formState.name.error?.asString()
                 ) { labelName ->
                     viewModel.updateName(labelName)
                 }
@@ -171,7 +171,7 @@ private fun SignUpContentScreen(
                     placeholder = R.string.hint_email,
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
-                    error = viewModel.formState.email.error
+                    error = viewModel.formState.email.error?.asString()
                 ) { labelEmail ->
                     viewModel.updateEmail(labelEmail)
                 }
@@ -182,7 +182,7 @@ private fun SignUpContentScreen(
                     placeholder = R.string.hint_password,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Next,
-                    error = viewModel.formState.password.error,
+                    error = viewModel.formState.password.error?.asString(),
                     offuscate = passwordHidden,
                     trailingIcon = {
                         IconButton(
@@ -217,7 +217,7 @@ private fun SignUpContentScreen(
                     placeholder = R.string.hint_confirm_password,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Next,
-                    error = viewModel.formState.confirmPassword.error,
+                    error = viewModel.formState.confirmPassword.error?.asString(),
                     offuscate = passwordHidden,
                     trailingIcon = {
                         IconButton(
@@ -255,7 +255,7 @@ private fun SignUpContentScreen(
                     placeholder = R.string.hint_document,
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
-                    error = viewModel.formState.document.error
+                    error = viewModel.formState.document.error?.asString()
                 ) { textFieldValue ->
                     viewModel.updateDocument(textFieldValue.text)
                 }

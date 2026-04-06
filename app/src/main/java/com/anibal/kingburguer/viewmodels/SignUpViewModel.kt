@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.anibal.kingburguer.compose.signup.FieldState
 import com.anibal.kingburguer.compose.signup.FormState
 import com.anibal.kingburguer.compose.signup.SignUpState
+import com.anibal.kingburguer.validation.EmailValidator
 import com.anibal.kingburguer.validation.Mask
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,8 @@ class SignUpViewModel: ViewModel() {
     val uiState: StateFlow<SignUpState> = _uiState.asStateFlow()
 
     var formState by mutableStateOf(FormState())
+
+    private val emailValidator = EmailValidator()
 
     fun updateName(newName: String){
 
@@ -88,22 +91,11 @@ class SignUpViewModel: ViewModel() {
     }
 
     fun updateEmail(newEmail: String){
-
-        if (newEmail.isBlank()){
-            formState = formState.copy(
-                email = FieldState(field = newEmail, error = "O campo não pode ser vazio")
-            )
-            return
-        }
-        if (!isEmailValid(newEmail)){
-            formState = formState.copy(
-                email = FieldState(field = newEmail, error = "O campo invalido, verifique o e-mail")
-            )
-            return
-        }
+        val textString = emailValidator.validate(newEmail)
         // Aqui é o sucesso
         formState = formState.copy(
-            email = FieldState(field = newEmail, error = null)
+            email = FieldState(field = newEmail, error = textString
+             )
         )
     }
 
@@ -197,10 +189,5 @@ class SignUpViewModel: ViewModel() {
             //Falha
            // _uiState.update { it.copy(isLoading = false, error = "Usuario não encontrado!") }
         }
-    }
-
-    private fun isEmailValid(email: String): Boolean{
-
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 }

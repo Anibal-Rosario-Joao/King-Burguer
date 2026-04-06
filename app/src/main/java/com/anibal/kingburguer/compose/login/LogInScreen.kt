@@ -95,7 +95,7 @@ fun LogInScreen(
                             viewModel.reset()
                         },
                         dialogTitle = stringResource(R.string.app_name),
-                        dialogText = uiState.error!!,
+                        dialogText = uiState.error!!.asString(),
                         icon = Icons.Filled.Info
                     )
                 }
