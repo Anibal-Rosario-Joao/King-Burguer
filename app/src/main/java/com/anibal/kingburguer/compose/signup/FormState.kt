@@ -1,17 +1,17 @@
 package com.anibal.kingburguer.compose.signup
 
-import com.anibal.kingburguer.validation.TextString
-import java.lang.reflect.Field
+import TextString
 
 data class FieldState(
-    var field: String = "",
-    var error: TextString? = null
+    val field: String = "",
+    val error: TextString? = null
 )
 data class FormState(
-    var name: FieldState = FieldState(),
-    var email: FieldState = FieldState(),
-    var password: FieldState = FieldState(),
-    var confirmPassword: FieldState = FieldState(),
-    var document: FieldState = FieldState(),
-    var birthday: FieldState = FieldState()
+    val name: FieldState = FieldState(),
+    val email: FieldState = FieldState(),
+    val password: FieldState = FieldState(),
+    val confirmPassword: FieldState = FieldState(),
+    val document: FieldState = FieldState(),
+    val birthday: FieldState = FieldState(),
+    val formIsValid: Boolean = false
 )

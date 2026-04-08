@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LogInViewModel: ViewModel() {
+open class LogInViewModel: ViewModel() {
 
     //Ocioso
     private val _uiState = MutableStateFlow(LoginUiState())

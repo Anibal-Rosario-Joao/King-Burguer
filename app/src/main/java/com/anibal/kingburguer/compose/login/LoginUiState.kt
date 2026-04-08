@@ -1,6 +1,6 @@
 package com.anibal.kingburguer.compose.login
 
-import com.anibal.kingburguer.validation.TextString
+import TextString
 
 data class LoginUiState(
     val isLoading: Boolean = false,

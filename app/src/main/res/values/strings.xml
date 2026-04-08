@@ -25,4 +25,11 @@
     <string name="back">Voltar</string>
     <string name="error_email_black">O campo não pode ser vazio</string>
     <string name="error_email_invalid">O campo invalido, verifique o e-mail</string>
+    <string name="error_field_blank">O campo não pode ser vazio</string>
+    <string name="error_name_size">O campo deve ter pelo menos 3 caracter</string>
+    <string name="error_password_size">O campo deve ter pelo menos 8 caracter</string>
+    <string name="error_password_confirm">O senha não coincide</string>
+    <string name="document_invalid">NUIT Inválido</string>
+    <string name="birthday_invalid">Data de nascimento inválida</string>
+    <string name="birthday_future">Data de nascimento não ser maior que hoje</string>
 </resources>

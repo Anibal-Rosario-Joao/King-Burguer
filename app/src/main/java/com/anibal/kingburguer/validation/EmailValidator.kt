@@ -1,44 +1,21 @@
 package com.anibal.kingburguer.validation
 
+import TextString
 import android.util.Patterns
-import androidx.annotation.StringRes
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import com.anibal.kingburguer.R
+import com.anibal.kingburguer.textstring.RawString
+import com.anibal.kingburguer.textstring.ResourceString
+
+class EmailValidator: Validator {
 
 
-interface TextString {
-    @Composable // Para Funcionar o @StringRes
-    fun asString(): String
-}
-
-// String que vem do Resource String.xml
-class ResourceString(@StringRes private val input: Int): TextString{
-    @Composable
-    override fun asString(): String {
-        return stringResource(input)
-    }
-
-}
-
-// String Purra
-class RawString( private val input: String): TextString{
-    @Composable
-    override fun asString(): String {
-        return input
-    }
-
-}
-class EmailValidator {
-
-    fun validate(email: String): TextString?{
-        if (email.isBlank()) {
-            return ResourceString(R.string.error_email_black)
+    override fun validate(input: String): TextString?{
+        if (input.isBlank()) {
+            return ResourceString(R.string.error_field_blank)
            // return "O campo não pode ser vazio"
         }
-        if (!isEmailValid(email)){
-            //return ResourceString(R.string.error_email_invalid)
-            return RawString("O campo invalido, verifique o e-mail")
+        if (!isEmailValid(input)){
+            return ResourceString(R.string.error_email_invalid)
         }
         return null
     }
