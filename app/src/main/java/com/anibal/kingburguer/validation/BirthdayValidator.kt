@@ -1,44 +1,48 @@
-
 package com.anibal.kingburguer.validation
 
 import TextString
-import android.icu.text.SimpleDateFormat
-import androidx.core.net.ParseException
 import com.anibal.kingburguer.R
 import com.anibal.kingburguer.textstring.ResourceString
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class BirthdayValidator: Validator2 {
-    override fun validate(pattern: String, current: String, result: String): TextString? {
-        if (result.isBlank()){
+class BirthdayValidator : Validator() {
+    private val pattern = "##/##/####"
+
+    var result: String = ""
+        private set
+
+    override fun validate(input1: String, input2: String): TextString? {
+        val currentBirthday = input1
+        val birthday = input2
+        result = Mask(pattern, currentBirthday, birthday)
+
+        if (result.isBlank()) {
             return ResourceString(R.string.error_field_blank)
         }
-        // o numero precisa ser igual da mascara = invalida
-        if(result.length != pattern.length){
+
+        // valida se está completo no formato da máscara
+        if (result.length != pattern.length) {
             return ResourceString(R.string.birthday_invalid)
         }
 
-        //Não validar a data 30/02/2000
-        try {
-            val date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).run {
-                isLenient = false //  Não deixa pegar datas aproximada ou por aproximação
-                parse(result)
-            }?.also {
-                //Não validar a data futura
-                val now = Date()
-                if (it.after(now)){
-                    return ResourceString(R.string.birthday_future)
-                }
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).apply {
+            isLenient = false
+        }
+
+        return try {
+            val date = sdf.parse(result) ?: return ResourceString(R.string.birthday_invalid)
+
+            val now = Date()
+            if (date.after(now)) {
+                ResourceString(R.string.birthday_future)
+            } else {
+                null
             }
-           // formState = formState.copy(
-           //     birthday = FieldState(field = result, error = null)
-          //  )
-
-        }catch (e: ParseException){
-            //Não validar a data 30/02/2000
-            return ResourceString(R.string.birthday_invalid)
+        } catch (e: ParseException) {
+            ResourceString(R.string.birthday_invalid)
         }
-        return null
     }
 }

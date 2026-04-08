@@ -4,7 +4,8 @@ import TextString
 
 data class FieldState(
     val field: String = "",
-    val error: TextString? = null
+    val error: TextString? = null,
+    val isValid: Boolean = false
 )
 data class FormState(
     val name: FieldState = FieldState(),

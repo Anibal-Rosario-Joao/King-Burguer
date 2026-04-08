@@ -6,7 +6,7 @@ import com.anibal.kingburguer.R
 import com.anibal.kingburguer.textstring.RawString
 import com.anibal.kingburguer.textstring.ResourceString
 
-class EmailValidator: Validator {
+class EmailValidator: Validator() {
 
 
     override fun validate(input: String): TextString?{

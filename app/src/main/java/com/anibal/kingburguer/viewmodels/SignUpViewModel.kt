@@ -1,19 +1,13 @@
 package com.anibal.kingburguer.viewmodels
 
-import TextString
-import android.icu.text.SimpleDateFormat
-import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.net.ParseException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anibal.kingburguer.R
 import com.anibal.kingburguer.compose.signup.FieldState
 import com.anibal.kingburguer.compose.signup.FormState
 import com.anibal.kingburguer.compose.signup.SignUpState
-import com.anibal.kingburguer.textstring.ResourceString
 import com.anibal.kingburguer.validation.BirthdayValidator
 import com.anibal.kingburguer.validation.ConfirmPasswordValidator
 import com.anibal.kingburguer.validation.DocumentValidator
@@ -31,122 +25,93 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
  class SignUpViewModel: ViewModel() {
-    //Ocioso
     private val _uiState = MutableStateFlow(SignUpState())
     val uiState: StateFlow<SignUpState> = _uiState.asStateFlow()
 
     var formState by mutableStateOf(FormState())
 
-     private val validator1 =  mapOf<String, Validator >(
+     private val validator =  mapOf(
          "Name" to NameValidator(),
          "Email" to EmailValidator(),
          "Password" to PasswordValidator(),
+         "ConfirmPassword" to ConfirmPasswordValidator(),
      )
-     private val simpleValidator = ConfirmPasswordValidator()
+     val birthdayValidator = BirthdayValidator()
+     val documentValidator = DocumentValidator()
 
-     private val validator2 =  mapOf<String, Validator2>(
-         "Birtday" to BirthdayValidator(),
-         "Document" to DocumentValidator()
-     )
-
-/*
-    private val validator =  mapOf<String,Validator>(
-        "Email" to EmailValidator(),
-        "Name" to NameValidator(),
-        "Password" to PasswordValidator(),
-        "Password2" to ConfirmPasswordValidator(),
-        "Birtday" to BirthdayValidator(),
-        "Document" to DocumentValidator()
-    )
-
-
-
-
-
-
-    fun updateConfirmPassaword(newConfirmPassword: String){
-        val textString = validator["Password2"]?.validate(newConfirmPassword)
-        formState = formState.copy(
-            confirmPassword = FieldState(field = newConfirmPassword, error = textString)
-        )
-    }
-
-    fun updateDocument(newDocument: String){
-        val pattern = "###.###.###-##"
-        val currentDocument = formState.document.field
-        val result = Mask(pattern, currentDocument, newDocument)
-        val textString = validator["Document"]?.validate(newDocument)
-
-        formState = formState.copy(
-            document = FieldState(field = result, error = textString)
-        )
-    }
-
-
-    fun updateBirthday(newBirthday: String){
-        val pattern = "##/##/####"
-        val currentBirthday = formState.birthday.field
-        val result = Mask(pattern,currentBirthday, newBirthday)
-        val textString = validator["Birthday"]?.validate(newBirthday)
-
-        formState = formState.copy(
-            birthday = FieldState(field = result, error = textString)
-        )
-
-    }
-
- */
-fun updateName(newName: String){
-    val textString = validator1["Name"]?.validate(newName)
-    formState = formState.copy(
-        name = FieldState(field = newName, error = textString)
-    )
-}
-fun updateEmail(newEmail: String){
-    val textString = validator1["Email"]?.validate(newEmail)
-    formState = formState.copy(
-        email = FieldState(field = newEmail, error = textString
-        )
-    )
-}
-     fun updatePassword(newPassword: String){
-         val textString = validator1["Password"]?.validate(newPassword)
+     fun updateName(newName: String){
+         val textString = validator["Name"]?.validate(newName)
          formState = formState.copy(
-             password = FieldState(field = newPassword, error = textString)
+             name = FieldState(field = newName, error = textString, isValid = textString == null)
          )
+         updateButton()
+     }
+     fun updateEmail(newEmail: String){
+         val textString = validator["Email"]?.validate(newEmail)
+         formState = formState.copy(
+             email = FieldState(field = newEmail, error = textString, isValid = textString == null)
+         )
+         updateButton()
+     }
+     fun updatePassword(newPassword: String){
+         val confirmPassword2 = formState.confirmPassword.field
+         var textString = validator["Password"]?.validate(newPassword)
+         formState = formState.copy(
+             password = FieldState(field = newPassword, error = textString, isValid = textString == null)
+         )
+         textString = validator["ConfirmPassword"]?.validate(newPassword, confirmPassword2)
+         formState = formState.copy(
+             confirmPassword = FieldState(field = confirmPassword2, error = textString, isValid = textString == null)
+         )
+         updateButton()
      }
 
      fun updateConfirmPassaword(newConfirmPassword: String){
-         val password = formState.password.field
-         val textString = simpleValidator.validate(newConfirmPassword, password)
+         val password1 = formState.password.field
+         var textString = validator["confirmPassword"]?.validate(password1, newConfirmPassword)
 
          formState = formState.copy(
-             confirmPassword = FieldState(field = newConfirmPassword, error = textString
-             )
+             confirmPassword = FieldState(field = newConfirmPassword, error = textString, isValid = textString == null)
          )
+         textString = validator["Password"]?.validate(password1, newConfirmPassword)
+         formState = formState.copy(
+             password = FieldState(field = password1, error = textString, isValid = textString == null)
+         )
+         updateButton()
      }
 
      fun updateDocument(newDocument: String){
-         val pattern = "###.###.###-##"
          val currentDocument = formState.document.field
-         val result = Mask(pattern, currentDocument, newDocument)
-         val textString = validator2["Document"]?.validate(pattern,currentDocument,result)
+         val textString = documentValidator.validate(currentDocument,newDocument)
 
          formState = formState.copy(
-             document = FieldState(field = result, error = textString)
+             document = FieldState(field = documentValidator.result, error = textString, isValid = textString == null)
          )
+         updateButton()
      }
 
      fun updateBirthday(newBirthday: String){
-         val pattern = "##/##/####"
          val currentBirthday = formState.birthday.field
-         val result = Mask(pattern,currentBirthday, newBirthday)
-         val textString = validator2["Birthday"]?.validate(pattern,currentBirthday,result)
+         val textString = birthdayValidator.validate(currentBirthday,newBirthday)
 
          formState = formState.copy(
-             birthday = FieldState(field = result, error = textString)
+             birthday = FieldState(field = birthdayValidator.result, error = textString, isValid = textString == null)
          )
+         updateButton()
+     }
 
+     private fun updateButton(){
+        val formIsValid = with(formState){
+             name.isValid &&
+             email.isValid &&
+             password.isValid &&
+             confirmPassword.isValid &&
+             document.isValid &&
+             birthday.isValid
+         }
+         formState = formState.copy(
+             formIsValid = formIsValid
+         )
      }
      fun send(){
         // depod os dados vão para o server

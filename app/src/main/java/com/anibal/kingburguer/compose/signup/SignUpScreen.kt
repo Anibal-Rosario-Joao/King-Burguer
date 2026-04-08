@@ -268,14 +268,15 @@ private fun SignUpContentScreen(
                     label = R.string.birthday,
                     placeholder = R.string.hint_birthday,
                     keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
+                    error = viewModel.formState.birthday.error?.asString()
                 ) { textFieldValue ->
                     viewModel.updateBirthday(textFieldValue.text)
                 }
 
                 KingButton(
                     text = stringResource(R.string.send),
-                    enabled = true,
+                    enabled = viewModel.formState.formIsValid,
                     loading = uiState.isLoading,
                     onClick = {
                         viewModel.send()
