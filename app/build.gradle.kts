@@ -50,7 +50,12 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.material.icons)
 
-    //Test
+    // HTTP
+    implementation(libs.retrofit2)
+    implementation(libs.retrofit2.converter.gson)
+    implementation(libs.okhttp3.logging.interceptor)
+
+    //Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
