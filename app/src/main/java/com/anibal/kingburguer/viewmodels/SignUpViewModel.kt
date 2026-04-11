@@ -1,22 +1,22 @@
 package com.anibal.kingburguer.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anibal.kingburguer.api.KingBurguerService
 import com.anibal.kingburguer.compose.signup.FieldState
 import com.anibal.kingburguer.compose.signup.FormState
 import com.anibal.kingburguer.compose.signup.SignUpState
+import com.anibal.kingburguer.textstring.RawString
 import com.anibal.kingburguer.validation.BirthdayValidator
 import com.anibal.kingburguer.validation.ConfirmPasswordValidator
 import com.anibal.kingburguer.validation.DocumentValidator
 import com.anibal.kingburguer.validation.EmailValidator
-import com.anibal.kingburguer.validation.Mask
 import com.anibal.kingburguer.validation.NameValidator
 import com.anibal.kingburguer.validation.PasswordValidator
-import com.anibal.kingburguer.validation.Validator
-import com.anibal.kingburguer.validation.Validator2
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -120,12 +120,19 @@ import kotlinx.coroutines.launch
             it.copy(isLoading = true)
         }
         viewModelScope.launch {
-            delay(3000)
+           val service = KingBurguerService.create()
+            val response = service.getTest()
+
+            Log.i("Teste", "Response status: ${response.code()}")
+            Log.i("Teste", "Response body: ${response.body()}")
+            Log.i("Teste", "Response body error: ${response.errorBody()}")
+            Log.i("Teste", "Response success: ${response.isSuccessful()}")
             //Sucesso
-             _uiState.update { it.copy(isLoading = false,goToHome = true) }
+           //  _uiState.update { it.copy(isLoading = false,goToHome = true) }
+            val content = response.errorBody()?.string()
 
             //Falha
-           // _uiState.update { it.copy(isLoading = false, error = "Usuario não encontrado!") }
+            _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
         }
     }
 
