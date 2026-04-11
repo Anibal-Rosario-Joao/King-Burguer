@@ -276,7 +276,7 @@ private fun SignUpContentScreen(
 
                 KingButton(
                     text = stringResource(R.string.send),
-                    enabled = viewModel.formState.formIsValid,
+                    enabled = true, // viewModel.formState.formIsValid,
                     loading = uiState.isLoading,
                     onClick = {
                         viewModel.send()
