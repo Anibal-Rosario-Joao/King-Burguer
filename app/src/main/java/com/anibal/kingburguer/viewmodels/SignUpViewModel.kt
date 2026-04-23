@@ -10,6 +10,7 @@ import com.anibal.kingburguer.api.KingBurguerService
 import com.anibal.kingburguer.compose.signup.FieldState
 import com.anibal.kingburguer.compose.signup.FormState
 import com.anibal.kingburguer.compose.signup.SignUpState
+import com.anibal.kingburguer.data.UserRequest
 import com.anibal.kingburguer.textstring.RawString
 import com.anibal.kingburguer.validation.BirthdayValidator
 import com.anibal.kingburguer.validation.ConfirmPasswordValidator
@@ -23,8 +24,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
- class SignUpViewModel: ViewModel() {
+class SignUpViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(SignUpState())
     val uiState: StateFlow<SignUpState> = _uiState.asStateFlow()
 
@@ -115,26 +117,51 @@ import kotlinx.coroutines.launch
      }
      fun send(){
         // depod os dados vão para o server
-        _uiState.update {
-            //Carregando
+        _uiState.update { //Carregando
             it.copy(isLoading = true)
         }
         viewModelScope.launch {
-           val service = KingBurguerService.create()
-            val response = service.getTest()
 
-            Log.i("Teste", "Response status: ${response.code()}")
-            Log.i("Teste", "Response body: ${response.body()}")
-            Log.i("Teste", "Response body error: ${response.errorBody()}")
-            Log.i("Teste", "Response success: ${response.isSuccessful()}")
+            //   Log.i("Teste", "Response status: ${response.code()}")
+            //  Log.i("Teste", "Response body: ${response.body()}")
+            //  Log.i("Teste", "Response body error: ${response.errorBody()}")
+            //  Log.i("Teste", "Response success: ${response.isSuccessful()}")
+            try {
+                with(formState) {
+                    val userRequest = UserRequest(
+                        name = name.field,
+                        email = email.field,
+                        password = password.field,
+                        document = document.field,
+                        birthday = "2000-02-20"
+                    )
+                    val service = KingBurguerService.create()
+                    val content = service.postUser(userRequest)
+
+                    Log.i("Teste", "Content is $content")
+                    // _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
+                }
+            }catch (e: HttpException){
+                Log.i("Teste", "Response status: ${e.code()}")
+                val content = e.response()?.errorBody()?.string()
+
+                Log.i("Teste", "Response body: $content")
+                _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
+
+            }
+
+           // val response = service.getTest()
+
+
             //Sucesso
            //  _uiState.update { it.copy(isLoading = false,goToHome = true) }
-            val content = response.errorBody()?.string()
+           // val content = response.errorBody()?.string()
 
             //Falha
-            _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
+          //  _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
         }
     }
+
 
     fun reset(){
         _uiState.update {
