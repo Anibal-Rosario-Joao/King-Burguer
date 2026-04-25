@@ -8,7 +8,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import javax.crypto.SecretKey
 
 interface KingBurguerService {
     // @GET("kingburguer")
@@ -16,10 +18,13 @@ interface KingBurguerService {
     // 2. suspend fun getTest(): String com block try catch
 
     @POST("users")
-    suspend fun postUser(@Body userRequest: UserRequest): String
+    suspend fun postUser(
+        @Body userRequest: UserRequest,
+        @Header ("x-secret-key") secretKey: String = "c768c541-549b-4a21-b2b3-33769129f8d6"
+    ): String
 
     companion object{
-        private const val  BASE_URL = "https://hades.tiagoaguiar.co/"
+        private const val  BASE_URL = "https://hades.tiagoaguiar.co/kingburguer/"
 
         fun create(): KingBurguerService{
             val logger = HttpLoggingInterceptor().apply {
