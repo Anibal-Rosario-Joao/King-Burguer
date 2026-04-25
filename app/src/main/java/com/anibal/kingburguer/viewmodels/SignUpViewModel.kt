@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class SignUpViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(SignUpState())
@@ -128,12 +130,18 @@ class SignUpViewModel: ViewModel() {
             //  Log.i("Teste", "Response success: ${response.isSuccessful()}")
             try {
                 with(formState) {
+                    val date = SimpleDateFormat("dd/MM/yyyy",Locale.getDefault())
+                        .parse(birthday.field)
+
+                    val dataFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        .format(date!!)
+
                     val userRequest = UserRequest(
                         name = name.field,
                         email = email.field,
                         password = password.field,
                         document = document.field,
-                        birthday = "2000-02-20"
+                        birthday = dataFormat
                     )
                     val service = KingBurguerService.create()
                     val content = service.postUser(userRequest)
