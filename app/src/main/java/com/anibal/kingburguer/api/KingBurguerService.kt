@@ -3,15 +3,14 @@ package com.anibal.kingburguer.api
 import com.anibal.kingburguer.BuildConfig
 import com.anibal.kingburguer.data.UserRequest
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
-import javax.crypto.SecretKey
 
 interface KingBurguerService {
     // @GET("kingburguer")
@@ -22,7 +21,7 @@ interface KingBurguerService {
     suspend fun postUser(
         @Body userRequest: UserRequest,
         @Header ("x-secret-key") secretKey: String = BuildConfig.X_SECRET_KEY
-    ): String
+    ): Response<ResponseBody>
 
     companion object{
         private const val  BASE_URL = "https://hades.tiagoaguiar.co/kingburguer/"

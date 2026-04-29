@@ -10,6 +10,8 @@ import com.anibal.kingburguer.api.KingBurguerService
 import com.anibal.kingburguer.compose.signup.FieldState
 import com.anibal.kingburguer.compose.signup.FormState
 import com.anibal.kingburguer.compose.signup.SignUpState
+import com.anibal.kingburguer.data.KingBurguerRepository
+import com.anibal.kingburguer.data.UserCreateResponse
 import com.anibal.kingburguer.data.UserRequest
 import com.anibal.kingburguer.textstring.RawString
 import com.anibal.kingburguer.validation.BirthdayValidator
@@ -119,57 +121,44 @@ class SignUpViewModel: ViewModel() {
      }
      fun send(){
         // depod os dados vão para o server
-        _uiState.update { //Carregando
-            it.copy(isLoading = true)
-        }
+       // _uiState.update { it.copy(isLoading = true)}
         viewModelScope.launch {
 
-            //   Log.i("Teste", "Response status: ${response.code()}")
-            //  Log.i("Teste", "Response body: ${response.body()}")
-            //  Log.i("Teste", "Response body error: ${response.errorBody()}")
-            //  Log.i("Teste", "Response success: ${response.isSuccessful()}")
-            try {
-                with(formState) {
-                    val date = SimpleDateFormat("dd/MM/yyyy",Locale.getDefault())
-                        .parse(birthday.field)
+            with(formState) {
+                val date = SimpleDateFormat("dd/MM/yyyy",Locale.getDefault())
+                    .parse(birthday.field)
 
-                    val dataFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                        .format(date!!)
+                val dataFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    .format(date!!)
 
-                    val userRequest = UserRequest(
-                        name = name.field,
-                        email = email.field,
-                        password = password.field,
-                        document = document.field,
-                        birthday = dataFormat
-                    )
-                    val service = KingBurguerService.create()
-                    val content = service.postUser(userRequest)
+                val userRequest = UserRequest(
+                    name = name.field,
+                    email = email.field,
+                    password = password.field,
+                    document = document.field,
+                    birthday = dataFormat
+                )
+                val service = KingBurguerService.create()
+                val repository = KingBurguerRepository(service)
 
-                    Log.i("Teste", "Content is $content")
-                    // _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
+                val result = repository.postUser(userRequest)
+                Log.i("Teste", "result is $result")
+                // grande poder da sealed class, que é tratar ela com WHEN
+
+                when(result){
+                    is UserCreateResponse.Sucess -> {
+                        _uiState.update{ it.copy(isLoading = false,goToHome = true) }
+                    }
+                    is UserCreateResponse.ErrorAuth -> {
+                        _uiState.update { it.copy(isLoading = false, error = RawString(result.detail.message ))}
+                    }
+                    is UserCreateResponse.Error -> {
+                        _uiState.update { it.copy(isLoading = false, error = RawString(result.detail))}
+                    }
                 }
-            }catch (e: HttpException){
-                Log.i("Teste", "Response status: ${e.code()}")
-                val content = e.response()?.errorBody()?.string()
-
-                Log.i("Teste", "Response body: $content")
-                _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
-
             }
-
-           // val response = service.getTest()
-
-
-            //Sucesso
-           //  _uiState.update { it.copy(isLoading = false,goToHome = true) }
-           // val content = response.errorBody()?.string()
-
-            //Falha
-          //  _uiState.update { it.copy(isLoading = false, error = RawString(content!!) )}
         }
     }
-
 
     fun reset(){
         _uiState.update {
