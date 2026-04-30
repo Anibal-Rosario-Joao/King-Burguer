@@ -2,6 +2,6 @@ package com.anibal.kingburguer.compose
 
 enum class Screen(val route: String) {
     LOGIN("login"),
-    SIGUP("signup"),
+    SIGNUP("signup"),
     HOME("home")
 }

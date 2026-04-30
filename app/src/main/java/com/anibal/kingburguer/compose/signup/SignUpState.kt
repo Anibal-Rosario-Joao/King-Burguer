@@ -4,6 +4,6 @@ import TextString
 
 data class SignUpState(
     val isLoading: Boolean = false,
-    val goToHome: Boolean = false,
+    val goToLogin: Boolean = false,
     val error: TextString? = null
 )

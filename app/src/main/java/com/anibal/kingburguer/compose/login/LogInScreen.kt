@@ -186,7 +186,7 @@ fun LogInScreen(
                     TextButton(
                         onClick = {
                             //TODO
-                            navController.navigate(Screen.SIGUP.route)
+                            navController.navigate(Screen.SIGNUP.route)
                         }
                     ) {
                         Text(

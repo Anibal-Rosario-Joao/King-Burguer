@@ -35,20 +35,15 @@ fun KingBurguerNavHost(navController: NavHostController) {
                 }
             )
         }
-        composable(Screen.SIGUP.route) {
+        composable(Screen.SIGNUP.route) {
             SignUpScreen(
                 navController = navController,
                 onNavigationClick = {
                     navController.navigateUp()
                 },
-                onNavigateToHome = {
-                    navController.navigate(Screen.HOME.route){
-                        popUpTo(Screen.LOGIN.route){
-                            inclusive = true
-                        }
-                    }
-                }
-                )
+                onNavigateToLogin = {
+                    navController.navigateUp()
+                })
         }
         composable (Screen.HOME.route){
             HomeScreen(navController = navController)

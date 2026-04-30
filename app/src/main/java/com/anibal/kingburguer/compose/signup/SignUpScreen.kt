@@ -55,10 +55,10 @@ import com.anibal.kingburguer.viewmodels.SignUpViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    viewModel: SignUpViewModel = viewModel(),
+    viewModel: SignUpViewModel = viewModel(factory = SignUpViewModel.factory),
     navController:  NavHostController,
     onNavigationClick: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToLogin: () -> Unit
 ){
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     Scaffold(
@@ -98,7 +98,7 @@ fun SignUpScreen(
                     viewModel = viewModel,
                     navController = navController,
                     onNavigationClick = onNavigationClick,
-                    onNavigateToHome = onNavigateToHome
+                    onNavigateToLogin = onNavigateToLogin
                 )
             }
         }
@@ -110,7 +110,7 @@ private fun SignUpContentScreen(
     viewModel : SignUpViewModel,
     navController: NavHostController,
     onNavigationClick: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToLogin: () -> Unit
 ){
         val scrollState = rememberScrollState()
         var passwordHidden by remember { mutableStateOf(true) }
@@ -127,16 +127,22 @@ private fun SignUpContentScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.Top)
             ) {
-                // Importanta para o uso do botao de voltar Empilhamento de telas
-                LaunchedEffect(key1 = uiState.goToHome) {
-                    if(uiState.goToHome){
-                        onNavigateToHome()
-                        viewModel.reset()
-                    }
+
+                if(uiState.goToLogin){
+                    KingAlert(
+                        onDismissRequest = {},
+                        confirmationButton = {
+                            onNavigateToLogin()
+                            viewModel.reset()
+                        },
+                        dialogTitle = stringResource(R.string.app_name),
+                        dialogText = stringResource(R.string.user_created),
+                        icon = Icons.Default.Info
+                    )
                 }
 
-                if(uiState.goToHome){
-                    onNavigateToHome()
+                if(uiState.goToLogin){
+                    onNavigateToLogin()
                 }
                 uiState.error?.let {
                     KingAlert(
@@ -276,7 +282,7 @@ private fun SignUpContentScreen(
 
                 KingButton(
                     text = stringResource(R.string.send),
-                    enabled = true, // viewModel.formState.formIsValid,
+                    enabled =  viewModel.formState.formIsValid,
                     loading = uiState.isLoading,
                     onClick = {
                         viewModel.send()
@@ -306,7 +312,7 @@ fun SignUpnScreenLightPreview() {
         SignUpScreen(
             navController = rememberNavController(),
             onNavigationClick = {},
-            onNavigateToHome = {}
+            onNavigateToLogin = {}
         )
     }
 }
@@ -318,7 +324,7 @@ fun SignUpScreenDarkPreview() {
         SignUpScreen(
             navController = rememberNavController(),
             onNavigationClick = {},
-            onNavigateToHome = {}
+            onNavigateToLogin = {}
         )
     }
 }
