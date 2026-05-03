@@ -36,6 +36,30 @@ class KingBurguerRepository (
             return UserCreateResponse.Error(e.message ?: "unexpetected exception")
         }
 
+    }
 
+    suspend fun login(loginRequest: LoginRequest): LoginResponse{
+        // response -> Service
+        val response = service.login(loginRequest)
+        val sucess = response.isSuccessful
+
+        try {
+            if(!sucess){
+                val errorData = response.errorBody()?.string()?.let { json ->
+                    //401 -> Unaothorized (Falha)
+                    Gson().fromJson(json, LoginResponse.ErrorAuth::class.java)
+                }
+                return errorData ?: LoginResponse.Error("internal server error")
+            }else{
+                // 200 -> OK sucesso (Sucess)
+                val data = response.body()?.string()?.let { json ->
+                    Gson().fromJson(json, LoginResponse.Sucess::class.java)
+                }
+                return data ?: LoginResponse.Error("unexpected response success")
+            }
+
+        }catch (e: Exception){
+            return LoginResponse.Error(e.message ?: "unexpetected exception")
+        }
     }
 }

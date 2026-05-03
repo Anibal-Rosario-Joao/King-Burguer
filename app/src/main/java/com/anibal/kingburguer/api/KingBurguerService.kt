@@ -1,6 +1,7 @@
 package com.anibal.kingburguer.api
 
 import com.anibal.kingburguer.BuildConfig
+import com.anibal.kingburguer.data.LoginRequest
 import com.anibal.kingburguer.data.UserRequest
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
@@ -21,6 +22,12 @@ interface KingBurguerService {
     suspend fun postUser(
         @Body userRequest: UserRequest,
         @Header ("x-secret-key") secretKey: String = BuildConfig.X_SECRET_KEY
+    ): Response<ResponseBody>
+
+    @POST("auth/login")
+    suspend fun login(
+        @Body loginRequest: LoginRequest,
+        @Header("x-secret-key") secretKey: String = BuildConfig.X_SECRET_KEY
     ): Response<ResponseBody>
 
     companion object{

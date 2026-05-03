@@ -54,7 +54,7 @@ import com.anibal.kingburguer.viewmodels.LogInViewModel
 fun LogInScreen(
     navController: NavHostController,
     onNavigateToHome: () -> Unit,
-    viewModel: LogInViewModel = viewModel()
+    viewModel: LogInViewModel = viewModel(factory = LogInViewModel.factory)
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
@@ -105,22 +105,24 @@ fun LogInScreen(
                 )
 
                 KingTextField(
-                    value = viewModel.email,
+                    value = viewModel.formState.email.field,
                     label = R.string.email,
                     placeholder = R.string.hint_email,
                     keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ) {
-
+                    imeAction = ImeAction.Next,
+                    error = viewModel.formState.email.error?.asString()
+                ) {email ->
+                    viewModel.updateEmail(email)
                 }
 
                 KingTextField(
-                    value = viewModel.password,
+                    value = viewModel.formState.password.field,
                     label = R.string.password,
                     placeholder = R.string.hint_password,
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done,
                     offuscate = passwordHidden,
+                    error = viewModel.formState.password.error?.asString(),
                     trailingIcon = {
                         IconButton(
                             onClick = {
@@ -144,8 +146,9 @@ fun LogInScreen(
                             )
                         }
                     }
-                ) {
+                ) {password ->
                     //Evento de onValueChange()
+                    viewModel.updatePassword(password)
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -154,9 +157,9 @@ fun LogInScreen(
                         .fillMaxWidth()
                 ) {
                     Checkbox(
-                        checked = true,
-                        onCheckedChange = {
-                            //TODO
+                        checked = viewModel.formState.rememberMe,
+                        onCheckedChange = {remember ->
+                            viewModel.updateRememberMe(remember)
                         }
                     )
                     Text(
@@ -166,7 +169,7 @@ fun LogInScreen(
 
                 KingButton(
                     text = stringResource(R.string.send),
-                    enabled = true,
+                    enabled = viewModel.formState.formIsValid,
                     loading = uiState.isLoading,
                     onClick =  {
                         viewModel.send()

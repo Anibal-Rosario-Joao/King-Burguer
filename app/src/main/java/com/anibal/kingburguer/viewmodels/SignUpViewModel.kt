@@ -125,6 +125,10 @@ class SignUpViewModel(
          )
      }
      fun send(){
+         _uiState.update {
+             //Carregando
+             it.copy(isLoading = true)
+         }
         // depod os dados vão para o server
        // _uiState.update { it.copy(isLoading = true)}
         viewModelScope.launch {
