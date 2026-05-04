@@ -15,6 +15,7 @@ compose-compiler = "1.5.15"
 composeNavigaion = "2.9.7"
 retrofit = "3.0.0"
 okhttpLogging = "5.3.0"
+material = "1.7.5"
 
 
 
@@ -33,6 +34,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material = { group = "androidx.compose.material", name = "material", version.ref = "material" }
 androidx-material-icons = {group= "androidx.compose.material", name = "material-icons-extended"}
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigaion" }
 retrofit2 = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
