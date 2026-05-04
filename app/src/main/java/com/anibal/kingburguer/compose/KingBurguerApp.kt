@@ -27,7 +27,7 @@ fun KingBurguerNavHost(navController: NavHostController) {
             LogInScreen(
                 navController = navController,
                 onNavigateToHome = {
-                    navController.navigate(Screen.HOME.route){
+                    navController.navigate(Screen.MAIN.route){
                         popUpTo(Screen.LOGIN.route){
                             inclusive = true
                         }
@@ -45,7 +45,7 @@ fun KingBurguerNavHost(navController: NavHostController) {
                     navController.navigateUp()
                 })
         }
-        composable (Screen.HOME.route){
+        composable (Screen.MAIN.route){
             HomeScreen(navController = navController)
         }
     }
