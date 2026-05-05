@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.anibal.kingburguer.compose.home.HomeScreen
+import com.anibal.kingburguer.compose.home.MainScreen
 import com.anibal.kingburguer.compose.login.LogInScreen
 import com.anibal.kingburguer.compose.signup.SignUpScreen
 
@@ -46,7 +46,7 @@ fun KingBurguerNavHost(navController: NavHostController) {
                 })
         }
         composable (Screen.MAIN.route){
-            HomeScreen(navController = navController)
+            MainScreen()
         }
     }
 

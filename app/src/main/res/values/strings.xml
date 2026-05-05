@@ -33,4 +33,7 @@
     <string name="birthday_invalid">Data de nascimento inválida</string>
     <string name="birthday_future">Data de nascimento não ser maior que hoje</string>
     <string name="user_created">Usuario criado com sucesso!</string>
+    <string name="menu_home">Inicio</string>
+    <string name="menu_profile">Perfil</string>
+    <string name="menu_coupon">Cupom</string>
 </resources>
