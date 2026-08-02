@@ -1,9 +1,6 @@
-package com.anibal.kingburguer.compose.home
+package com.anibal.kingburguer.compose
 
-import android.media.Image
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,7 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.anibal.kingburguer.R
-import com.anibal.kingburguer.compose.Screen
+import com.anibal.kingburguer.compose.home.HomeScreen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 
 @Composable
@@ -163,15 +160,7 @@ fun MainBottomNavigation(
         }
     }
 }
-@Composable
-private fun HomeScreen(
-    modifier: Modifier
-){
-    Text(
-        text = "Home Screen".uppercase(),
-        style = MaterialTheme.typography.headlineLarge
-    )
-}
+
 
 @Composable
 private fun CouponScreen(
