@@ -1,6 +1,7 @@
 package com.anibal.kingburguer.compose
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -47,7 +48,7 @@ fun MainScreen(
             MainBottomNavigation(navController)
         }
     ) { contentPadding ->
-        Surface(
+        Column (
             modifier = Modifier
                 .wrapContentSize()
                 .padding(contentPadding)
