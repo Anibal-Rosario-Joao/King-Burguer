@@ -1,14 +1,19 @@
 package com.anibal.kingburguer.compose
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -16,13 +21,24 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.filled.PowerSettingsNew
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -33,19 +49,61 @@ import com.anibal.kingburguer.R
 import com.anibal.kingburguer.compose.home.HomeScreen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     //navController: NavHostController,
    // viewModel: HomeViewModel = viewModel()
 ) {
     val navController = rememberNavController()
+    var titleTopBarId by remember { mutableStateOf(R.string.menu_home) }
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         contentColor = MaterialTheme.colorScheme.background,
-        topBar = {},
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(titleTopBarId),
+                        color = MaterialTheme.colorScheme.onPrimary
+                        )
+                },
+                navigationIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.logo),
+                        contentDescription = stringResource(R.string.app_name),
+                        tint = Color.Unspecified
+                    )
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+
+                    IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Filled.PowerSettingsNew,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            )
+        },
         bottomBar = {
-            MainBottomNavigation(navController)
+            MainBottomNavigation(navController){ titleId ->
+                titleTopBarId = titleId
+            }
         }
     ) { contentPadding ->
         Column (
@@ -105,7 +163,8 @@ fun MainContentScreen(
 
 @Composable
 fun MainBottomNavigation(
-    navController: NavHostController
+    navController: NavHostController,
+    onNavegationChanged: (Int) -> Unit
 ){
     val navigationItems = listOf(
         NavigationItem(
@@ -143,6 +202,7 @@ fun MainBottomNavigation(
                             launchSingleTop = true
                             restoreState = true
                         }
+                        onNavegationChanged(item.title)
                     }
                 },
                 icon = {
