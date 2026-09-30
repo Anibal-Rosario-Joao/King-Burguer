@@ -22,6 +22,7 @@ import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 
 @Composable
 fun KingButton(
+    modifier: Modifier = Modifier,
     text: String,
     enabled: Boolean = true,
     loading: Boolean = false,
@@ -29,7 +30,7 @@ fun KingButton(
 
 ){
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
@@ -64,13 +65,13 @@ fun KingButtonPreview() {
     KingBurguerTheme(dynamicColor=false) {
         Column() {
             // loading is FALSE
-            KingButton("Hello World", enabled = false) {}
+            KingButton(text = "Hello World", enabled = false) {}
             // loading is FALSE
-            KingButton("Hello World", enabled = true){}
+            KingButton(text ="Hello World", enabled = true){}
             // enable is FALSE
-            KingButton("Hello World", loading = true){}
+            KingButton(text ="Hello World", loading = true){}
             // enable is FALSE
-            KingButton("Hello World", loading = false){}
+            KingButton(text ="Hello World", loading = false){}
         }
     }
 }

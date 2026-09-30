@@ -8,9 +8,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +26,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.Text
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
@@ -43,7 +46,8 @@ import com.anibal.kingburguer.common.currency
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 
 data class Product(
-    val name: String,
+    val id: Int,
+    val name: String = "",
     @DrawableRes val picture: Int = R.drawable.example,
     val price: Double = 20.0
 )
@@ -55,41 +59,45 @@ data class Category(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(vertical = 0.dp),
+    onProductClicked: (Int) -> Unit
 ){
     val categories = listOf(
         Category(
             "Sobremesa",
             listOf(
-                Product("Sobremesa 1"),
-                Product("Sobremesa 2"),
-                Product("Sobremesa 3"),
-                Product("Sobremesa 4")
+                Product(1,"Sobremesa 1"),
+                Product(2,"Sobremesa 2"),
+                Product(3,"Sobremesa 3"),
+                Product(4,"Sobremesa 4")
             )
         ),
         Category(
             "Vegetariano",
             listOf(
-                Product("Vegetariano 1"),
-                Product("Vegetariano 2"),
-                Product("Vegetariano 3"),
-                Product("Vegetariano 4")
+                Product(5,"Vegetariano 1"),
+                Product(6,"Vegetariano 2"),
+                Product(7,"Vegetariano 3"),
+                Product(8,"Vegetariano 4")
             )
         ),
         Category(
             "Bovino",
             listOf(
-                Product("Bovino 1"),
-                Product("Bovino 2"),
-                Product("Bovino 3"),
-                Product("Bovino 4"),
-                Product("Bovinho 5")
+                Product(9,"Bovino 1"),
+                Product(10,"Bovino 2"),
+                Product(11,"Bovino 3"),
+                Product(12,"Bovino 4"),
+                Product(13,"Bovinho 5")
             )
         ),
     )
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Box(
             contentAlignment = Alignment.BottomCenter
@@ -104,7 +112,7 @@ fun HomeScreen(
                 contentScale = ContentScale.Crop
             )
 
-            OutlinedButton(
+            Button(
                 modifier = Modifier
                     .padding(bottom = 12.dp),
                 elevation = ButtonDefaults.elevatedButtonElevation(
@@ -125,6 +133,7 @@ fun HomeScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
+          //  contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             itemsIndexed(categories) { index, cat ->
@@ -146,7 +155,7 @@ fun HomeScreen(
                     ) {
                         itemsIndexed(cat.products) { index, product ->
                             val startPadding = if (index == 0) 20.dp else 8.dp
-                            val endPadding = if (index == categories.size - 1) 20.dp else 8.dp
+                            val endPadding = if (index == cat.products.size - 1) 20.dp else 8.dp
 
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -161,7 +170,8 @@ fun HomeScreen(
                                         .border(
                                             BorderStroke(0.3.dp, Color.Gray),
                                             RoundedCornerShape(8.dp)
-                                        ),
+                                        )
+                                        .clickable{onProductClicked(product.id)},
                                     painter = painterResource(product.picture),
                                     contentDescription = product.name
                                 )
@@ -201,13 +211,13 @@ fun HomeScreen(
 @Composable
 fun HomeScreenLigthPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
-        HomeScreen(modifier = Modifier.fillMaxSize())
+        HomeScreen(modifier = Modifier.fillMaxSize()){}
     }
 }
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreenDarkPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = true){
-        HomeScreen(modifier = Modifier.fillMaxSize())
+        HomeScreen(modifier = Modifier.fillMaxSize()){}
     }
 }

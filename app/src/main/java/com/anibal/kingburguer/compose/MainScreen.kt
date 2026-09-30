@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,12 +42,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.anibal.kingburguer.R
 import com.anibal.kingburguer.compose.home.HomeScreen
+import com.anibal.kingburguer.compose.product.ProductScreen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +61,15 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
     var titleTopBarId by remember { mutableStateOf(R.string.menu_home) }
+
+    val navBackStackEntry  by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    LaunchedEffect(currentRoute) {
+        if (currentRoute == Screen.HOME.route){
+            titleTopBarId = R.string.menu_home
+        }
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -134,11 +147,15 @@ fun MainContentScreen(
     ) {
         composable (Screen.HOME.route){
             HomeScreen(
-                modifier = Modifier.padding(
-                    top = contentPadding.calculateTopPadding(),
-                    bottom = contentPadding.calculateBottomPadding()
-                )
-            )
+//                modifier = Modifier
+//                    .padding(
+//                    top = contentPadding.calculateTopPadding(),
+//                    bottom = contentPadding.calculateBottomPadding()
+//                )
+                contentPadding = contentPadding
+            ){ productId ->
+                navController.navigate("${Screen.PRODUCT.route}/$productId")
+            }
         }
 
         composable (Screen.COUPON.route){
@@ -152,6 +169,20 @@ fun MainContentScreen(
 
         composable (Screen.PROFILE.route){
             ProfileScreen(
+                modifier = Modifier.padding(
+                    top = contentPadding.calculateTopPadding(),
+                    bottom = contentPadding.calculateBottomPadding()
+                )
+            )
+        }
+
+        composable (
+            route = "${Screen.PRODUCT.route}/{productId}",
+            arguments = listOf(
+                navArgument("productId"){type = NavType.IntType}
+            )
+        ){
+            ProductScreen(
                 modifier = Modifier.padding(
                     top = contentPadding.calculateTopPadding(),
                     bottom = contentPadding.calculateBottomPadding()
