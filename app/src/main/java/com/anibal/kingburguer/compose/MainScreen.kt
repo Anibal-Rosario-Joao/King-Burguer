@@ -49,8 +49,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.anibal.kingburguer.R
+import com.anibal.kingburguer.compose.coupon.CouponScreen
 import com.anibal.kingburguer.compose.home.HomeScreen
 import com.anibal.kingburguer.compose.product.ProductScreen
+import com.anibal.kingburguer.compose.profile.ProfileScreen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -160,19 +162,19 @@ fun MainContentScreen(
 
         composable (Screen.COUPON.route){
             CouponScreen(
-                modifier = Modifier.padding(
-                    top = contentPadding.calculateTopPadding(),
-                    bottom = contentPadding.calculateBottomPadding()
-                )
+//                modifier = Modifier.padding(
+//                    top = contentPadding.calculateTopPadding(),
+//                    bottom = contentPadding.calculateBottomPadding()
+//                )
             )
         }
 
         composable (Screen.PROFILE.route){
             ProfileScreen(
-                modifier = Modifier.padding(
-                    top = contentPadding.calculateTopPadding(),
-                    bottom = contentPadding.calculateBottomPadding()
-                )
+//                modifier = Modifier.padding(
+//                    top = contentPadding.calculateTopPadding(),
+//                    bottom = contentPadding.calculateBottomPadding()
+//                )
             )
         }
 
@@ -183,10 +185,10 @@ fun MainContentScreen(
             )
         ){
             ProductScreen(
-                modifier = Modifier.padding(
-                    top = contentPadding.calculateTopPadding(),
-                    bottom = contentPadding.calculateBottomPadding()
-                )
+//                modifier = Modifier.padding(
+//                    top = contentPadding.calculateTopPadding(),
+//                    bottom = contentPadding.calculateBottomPadding()
+//                )
             )
         }
     }
@@ -251,27 +253,6 @@ fun MainBottomNavigation(
             )
         }
     }
-}
-
-
-@Composable
-private fun CouponScreen(
-    modifier: Modifier
-){
-    Text(
-        text = "Coupon Screen".uppercase(),
-        style = MaterialTheme.typography.headlineLarge
-    )
-}
-
-@Composable
-private fun ProfileScreen(
-    modifier: Modifier
-){
-    Text(
-    text = "Profile Screen".uppercase(),
-    style = MaterialTheme.typography.headlineLarge
-)
 }
 
 @Preview(showBackground = true, showSystemUi = true)
