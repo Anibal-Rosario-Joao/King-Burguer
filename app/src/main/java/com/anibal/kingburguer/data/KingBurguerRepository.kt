@@ -4,8 +4,12 @@ import com.anibal.kingburguer.api.KingBurguerService
 import com.google.gson.Gson
 
 class KingBurguerRepository (
-    private val service: KingBurguerService
+    private val service: KingBurguerService,
+    private val localStorage: KingBurguerLocalStorage
 ){
+
+    // "Expor o UserCrentialsFlow" -> Get
+    val testFlow = localStorage.userCredetialsFlow
 
     suspend fun postUser(userRequest: UserRequest): UserCreateResponse{
         // response -> Service
@@ -38,7 +42,7 @@ class KingBurguerRepository (
 
     }
 
-    suspend fun login(loginRequest: LoginRequest): LoginResponse{
+    suspend fun login(loginRequest: LoginRequest, keepLogged: Boolean): LoginResponse{
         // response -> Service
         val response = service.login(loginRequest)
         val sucess = response.isSuccessful
@@ -55,7 +59,21 @@ class KingBurguerRepository (
                 val data = response.body()?.string()?.let { json ->
                     Gson().fromJson(json, LoginResponse.Sucess::class.java)
                 }
-                return data ?: LoginResponse.Error("unexpected response success")
+
+                if (data == null) return LoginResponse.Error("unexpected response success")
+
+                //Em caso de sucesso guardar as credencias
+                if (keepLogged) {
+                    val userCredentials = UserCredencials(
+                        data.accessToken,
+                        data.refreshToken,
+                        data.expiresSeconds.toLong(),
+                        data.tokenType
+                    )
+                    localStorage.updateUserCredential(userCredentials)
+                }
+
+                return data
             }
 
         }catch (e: Exception){
