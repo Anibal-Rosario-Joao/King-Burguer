@@ -12,4 +12,3 @@ sealed class UserCreateResponse{
     data class ErrorAuth(val detail: ErrorDetail): UserCreateResponse()
 }
 
-data class ErrorDetail(val message: String)

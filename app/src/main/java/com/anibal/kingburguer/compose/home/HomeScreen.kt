@@ -1,7 +1,6 @@
 package com.anibal.kingburguer.compose.home
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -12,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,13 +22,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,9 +40,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anibal.kingburguer.R
 import com.anibal.kingburguer.common.currency
+import com.anibal.kingburguer.data.CategoryResponse
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
+import com.anibal.kingburguer.viewmodels.HomeViewModel
 
 data class Product(
     val id: Int,
@@ -56,43 +58,83 @@ data class Category(
     val name: String,
     val products: List <Product>
 )
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.factory),
+    onProductClicked: (Int) -> Unit
+) {
+    val state = viewModel.uiState.collectAsState().value
+    HomeScreen(modifier, state, onProductClicked)
+}
+
+@Composable
+fun HomeScreen(
+    modifier: Modifier,
+    state: HomeUiState,
+    onProductClicked: (Int) -> Unit
+){
+    Box(
+        modifier = modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        when{
+            state.isLoading ->{
+                CircularProgressIndicator()
+            }
+            state.error != null ->{
+                Text(
+                    text = state.error,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            else ->{
+                HomeScreen(modifier = modifier, categories =state.categories, onProductClickeds = onProductClicked)
+            }
+        }
+    }
+}
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(vertical = 0.dp),
-    onProductClicked: (Int) -> Unit
+   categories: List<CategoryResponse>,
+    onProductClickeds: (Int) -> Unit
 ){
-    val categories = listOf(
-        Category(
-            "Sobremesa",
-            listOf(
-                Product(1,"Sobremesa 1"),
-                Product(2,"Sobremesa 2"),
-                Product(3,"Sobremesa 3"),
-                Product(4,"Sobremesa 4")
-            )
-        ),
-        Category(
-            "Vegetariano",
-            listOf(
-                Product(5,"Vegetariano 1"),
-                Product(6,"Vegetariano 2"),
-                Product(7,"Vegetariano 3"),
-                Product(8,"Vegetariano 4")
-            )
-        ),
-        Category(
-            "Bovino",
-            listOf(
-                Product(9,"Bovino 1"),
-                Product(10,"Bovino 2"),
-                Product(11,"Bovino 3"),
-                Product(12,"Bovino 4"),
-                Product(13,"Bovinho 5")
-            )
-        ),
-    )
+//    val categories = listOf(
+//        Category(
+//            "Sobremesa",
+//            listOf(
+//                Product(1,"Sobremesa 1"),
+//                Product(2,"Sobremesa 2"),
+//                Product(3,"Sobremesa 3"),
+//                Product(4,"Sobremesa 4")
+//            )
+//        ),
+//        Category(
+//            "Vegetariano",
+//            listOf(
+//                Product(5,"Vegetariano 1"),
+//                Product(6,"Vegetariano 2"),
+//                Product(7,"Vegetariano 3"),
+//                Product(8,"Vegetariano 4")
+//            )
+//        ),
+//        Category(
+//            "Bovino",
+//            listOf(
+//                Product(9,"Bovino 1"),
+//                Product(10,"Bovino 2"),
+//                Product(11,"Bovino 3"),
+//                Product(12,"Bovino 4"),
+//                Product(13,"Bovinho 5")
+//            )
+//        ),
+//    )
 
     Column(
         modifier = modifier
@@ -171,8 +213,8 @@ fun HomeScreen(
                                             BorderStroke(0.3.dp, Color.Gray),
                                             RoundedCornerShape(8.dp)
                                         )
-                                        .clickable{onProductClicked(product.id)},
-                                    painter = painterResource(product.picture),
+                                        .clickable{onProductClickeds(product.id)},
+                                    painter = painterResource(R.drawable.logo),
                                     contentDescription = product.name
                                 )
                                 Text(
@@ -209,15 +251,26 @@ fun HomeScreen(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun HomeScreenLigthPreview() {
+fun HomeScreenLoadingPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
-        HomeScreen(modifier = Modifier.fillMaxSize()){}
+        val state = HomeUiState(isLoading = true)
+        HomeScreen(modifier = Modifier.fillMaxSize(), state){}
     }
 }
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun HomeScreenDarkPreview() {
-    KingBurguerTheme (dynamicColor = false, darkTheme = true){
-        HomeScreen(modifier = Modifier.fillMaxSize()){}
+fun HomeScreenPreview() {
+    KingBurguerTheme (dynamicColor = false, darkTheme = false){
+        val state = HomeUiState(error = "Erro de teste !!!!!")
+        HomeScreen(modifier = Modifier.fillMaxSize(), state){}
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun HomeScreenEmptyPreview() {
+    KingBurguerTheme (dynamicColor = false, darkTheme = false){
+        val state = HomeUiState(categories = emptyList())
+        HomeScreen(modifier = Modifier.fillMaxSize(), state){}
     }
 }

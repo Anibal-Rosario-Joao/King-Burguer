@@ -2,6 +2,7 @@ package com.anibal.kingburguer.data
 
 import com.anibal.kingburguer.api.KingBurguerService
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import retrofit2.Response
 
 class KingBurguerRepository (
@@ -16,6 +17,13 @@ class KingBurguerRepository (
     suspend fun postUser(userRequest: UserRequest): ApiResult<UserCreateResponse>{
         val result = apiCall { service.postUser(userRequest) }
         return result
+    }
+
+    suspend fun fetchFeed(): ApiResult<FeedResponse>{
+        val userCredencials = localStorage.fetchInitialUserCredential()
+        val token = "${userCredencials.tokenTypes} ${userCredencials.accessToken}"
+        return apiCall { service.fetchFeed(token) }
+
     }
 
     suspend fun login(
@@ -57,8 +65,13 @@ class KingBurguerRepository (
                 val errorData = response.errorBody()?.string()?.let { json ->
                     if (response.code() == 401) {
                         //401 -> Unaothorized (Falha)
-                        val errorAuth = Gson().fromJson(json, ErrorAuth::class.java)
-                        ApiResult.Error(errorAuth.detail.message)
+                        try {
+                            val errorAuth = Gson().fromJson(json, ErrorAuth::class.java)
+                            ApiResult.Error(errorAuth.detail.message)
+                        }catch (e: JsonSyntaxException){
+                            val error = Gson().fromJson(json, Error::class.java)
+                            ApiResult.Error(error.detail)
+                        }
                     } else {
                         Gson().fromJson(json, ApiResult.Error::class.java)
                     }

@@ -15,6 +15,5 @@ data class LoginResponse(
 //    data class Error(val detail: String): LoginResponse()
 //    data class ErrorAuth(val detail: ErrorDetail): LoginResponse()
 
-data class Error(val detail: String)
-data class ErrorAuth(val detail: ErrorDetail)
+
 //data class ErrorDetail(val message: String) -> deixa
