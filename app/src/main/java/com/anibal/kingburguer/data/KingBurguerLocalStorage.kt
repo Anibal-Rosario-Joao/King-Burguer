@@ -1,12 +1,14 @@
 package com.anibal.kingburguer.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private const val USER_CREDENTIALS_NAME = "user_credentials"
@@ -16,12 +18,14 @@ class KingBurguerLocalStorage(context: Context) {
     private val dataStore: DataStore<Preferences> = context.dataStore
 
     val userCredetialsFlow = dataStore.data.map { preferences ->
-        val expires = preferences[EXPIRERES_TIMESTAMP]?: 0
-        val accessToken = preferences[ACCESS_TOKEN]?: ""
-        val refreshToken = preferences[REFRESH_TOKEN]?: ""
-        val tokenType = preferences[TOKEN_TYPE]?: ""
+        mapUserCredentials(preferences)
+    }
 
-        UserCredencials(accessToken,refreshToken,expires,tokenType)
+    suspend fun fetchInitialUserCredential(): UserCredencials{
+        val perf = dataStore.data.first().toPreferences()
+        val userCredencials = mapUserCredentials(perf)
+        Log.d("KingBurguerLocalStorage", "usuario encontrado: $userCredencials")
+        return userCredencials
     }
 
     suspend fun updateUserCredential(userCredencials: UserCredencials){
@@ -31,6 +35,15 @@ class KingBurguerLocalStorage(context: Context) {
             preferences[REFRESH_TOKEN] = userCredencials.refreshToken
             preferences[TOKEN_TYPE] = userCredencials.tokenTypes
         }
+    }
+
+    private fun mapUserCredentials(preferences: Preferences): UserCredencials{
+        val expires = preferences[EXPIRERES_TIMESTAMP]?: 0
+        val accessToken = preferences[ACCESS_TOKEN]?: ""
+        val refreshToken = preferences[REFRESH_TOKEN]?: ""
+        val tokenType = preferences[TOKEN_TYPE]?: ""
+
+        return UserCredencials(accessToken,refreshToken,expires,tokenType)
     }
 
     companion object{

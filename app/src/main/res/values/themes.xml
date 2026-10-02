@@ -2,4 +2,11 @@
 <resources>
 
     <style name="Theme.KingBurguer" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!--Novo tema para SpashScreen-->
+    <style name="Theme.KingBurguer.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primary</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.KingBurguer</item>
+    </style>
 </resources>

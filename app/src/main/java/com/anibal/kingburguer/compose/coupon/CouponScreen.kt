@@ -123,7 +123,7 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // Informações do Cupão
+
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Desconto Especial",
@@ -141,7 +141,6 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Linha divisória pontilhada (estilizada com divider simples)
             HorizontalDivider(
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f),
                 thickness = 1.dp
@@ -149,7 +148,6 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Rodapé do Card: Código e Botão Copiar
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -163,7 +161,6 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
                     )
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // Box do Código
                     Box(
                         modifier = Modifier
                             .background(
@@ -188,7 +185,6 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
                     }
                 }
 
-                // Botão de Copiar
                 IconButton(
                     onClick = {
                         clipboardManager.setText(AnnotatedString(coupon.code))

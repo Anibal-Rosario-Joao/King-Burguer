@@ -9,7 +9,8 @@ class KingBurguerRepository (
 ){
 
     // "Expor o UserCrentialsFlow" -> Get
-    val testFlow = localStorage.userCredetialsFlow
+    // val testFlow = localStorage.userCredetialsFlow
+    suspend fun fetchInitialCredentials() = localStorage.fetchInitialUserCredential()
 
     suspend fun postUser(userRequest: UserRequest): UserCreateResponse{
         // response -> Service
@@ -72,6 +73,43 @@ class KingBurguerRepository (
                     )
                     localStorage.updateUserCredential(userCredentials)
                 }
+
+                return data
+            }
+
+        }catch (e: Exception){
+            return LoginResponse.Error(e.message ?: "unexpetected exception")
+        }
+    }
+
+    suspend fun refreshToken(request: RefreshTokenRequest): LoginResponse{
+        try {
+            val userCredencials = localStorage.fetchInitialUserCredential()
+            val response = service.refreshToken(request, "${userCredencials.tokenTypes} ${userCredencials.accessToken}")
+
+            if(!response.isSuccessful){
+                val errorData = response.errorBody()?.string()?.let { json ->
+                    //401 -> Unaothorized (Falha)
+                    Gson().fromJson(json, LoginResponse.ErrorAuth::class.java)
+                }
+                return errorData ?: LoginResponse.Error("internal server error")
+            }else{
+                // 200 -> OK sucesso (Sucess)
+                val data = response.body()?.string()?.let { json ->
+                    Gson().fromJson(json, LoginResponse.Sucess::class.java)
+                }
+
+                if (data == null) return LoginResponse.Error("unexpected response success")
+
+                //Em caso de sucesso guardar as nova credencias
+
+                    val newUserCredentials = UserCredencials(
+                        data.accessToken,
+                        data.refreshToken,
+                        data.expiresSeconds.toLong(),
+                        data.tokenType
+                    )
+                    localStorage.updateUserCredential(newUserCredentials)
 
                 return data
             }

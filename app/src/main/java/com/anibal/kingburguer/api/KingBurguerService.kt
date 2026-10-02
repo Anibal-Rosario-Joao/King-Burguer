@@ -2,6 +2,7 @@ package com.anibal.kingburguer.api
 
 import com.anibal.kingburguer.BuildConfig
 import com.anibal.kingburguer.data.LoginRequest
+import com.anibal.kingburguer.data.RefreshTokenRequest
 import com.anibal.kingburguer.data.UserRequest
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
@@ -12,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 interface KingBurguerService {
     // @GET("kingburguer")
@@ -28,6 +30,12 @@ interface KingBurguerService {
     suspend fun login(
         @Body loginRequest: LoginRequest,
         @Header("x-secret-key") secretKey: String = BuildConfig.X_SECRET_KEY
+    ): Response<ResponseBody>
+
+    @PUT("auth/refresh-token")
+    suspend fun refreshToken(
+        @Body request: RefreshTokenRequest,
+        @Header("Authorization") token: String
     ): Response<ResponseBody>
 
     companion object{

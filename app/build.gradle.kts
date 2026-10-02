@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.material.icons)
+    implementation(libs.androidx.core.splashscreen)
 
     // HTTP
     implementation(libs.retrofit2)
