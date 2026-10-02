@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.androidx.navigation)
     implementation(libs.androidx.material.icons)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
 
     // HTTP
     implementation(libs.retrofit2)

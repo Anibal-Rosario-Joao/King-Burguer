@@ -26,6 +26,12 @@ class KingBurguerRepository (
 
     }
 
+    suspend fun fetchProductById(productId: Int): ApiResult<ProductDetailResponse>{
+        val userCredencials = localStorage.fetchInitialUserCredential()
+        val token = "${userCredencials.tokenTypes} ${userCredencials.accessToken}"
+        return apiCall { service.fetchProductById(token, productId) }
+    }
+
     suspend fun login(
         loginRequest: LoginRequest,
         keepLogged: Boolean

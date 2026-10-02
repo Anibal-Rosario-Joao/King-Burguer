@@ -170,12 +170,7 @@ fun MainContentScreen(
                 navArgument("productId"){type = NavType.IntType}
             )
         ){
-            ProductScreen(
-//                modifier = Modifier.padding(
-//                    top = contentPadding.calculateTopPadding(),
-//                    bottom = contentPadding.calculateBottomPadding()
-//                )
-            )
+            ProductScreen(modifier = Modifier)
         }
     }
 }

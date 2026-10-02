@@ -1,6 +1,5 @@
 package com.anibal.kingburguer.compose.product
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,10 +13,12 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.anibal.kingburguer.R
@@ -30,24 +31,55 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.anibal.kingburguer.common.currency
 import com.anibal.kingburguer.component.KingButton
-import com.anibal.kingburguer.compose.home.Product
+import com.anibal.kingburguer.data.CategoryDetailResponse
+import com.anibal.kingburguer.data.ProductDetailResponse
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 import com.anibal.kingburguer.viewmodels.ProductViewModel
+import java.util.Date
 
 @Composable
 fun ProductScreen(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
    viewModel: ProductViewModel = viewModel(factory = ProductViewModel.factory)
 ){
-    ProductScreen(modifier,viewModel.product)
+    val state = viewModel.uiState.collectAsState().value
+    ProductScreen(modifier, state)
+}
+
+@Composable
+fun ProductScreen(
+    modifier: Modifier,
+    state: ProductUiState
+){
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        when{
+            state.isLoading ->{
+                CircularProgressIndicator()
+            }
+            state.error != null ->{
+                Text(
+                    text = state.error,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            else -> {
+                ProductScreen(modifier, state)
+            }
+        }
+    }
 }
 
 @Composable
 fun ProductScreen(
     modifier: Modifier = Modifier,
-    product: Product
+    product: ProductDetailResponse
 ) {
     val scrollState = rememberScrollState()
     Surface(
@@ -65,11 +97,12 @@ fun ProductScreen(
                     .background(MaterialTheme.colorScheme.background)
                     .verticalScroll(scrollState)
             ) {
-                Image(
+                AsyncImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(230.dp),
-                    painter = painterResource(product.picture),
+                    model = product.pictureUrl ,
+                    placeholder = painterResource(R.drawable.logo),
                     contentDescription = product.name,
                     contentScale = ContentScale.Crop
                 )
@@ -109,7 +142,7 @@ fun ProductScreen(
                 Text(
                     modifier = Modifier
                         .padding(start = 24.dp, end = 24.dp, bottom = 56.dp),
-                    text = "Tenho grande interesse em fazer parte da Save the Children International, uma instituição reconhecida pelo seu impacto positivo na vida das comunidades, especialmente no apoio às crianças e famílias em situação de vulnerabilidade. Acredito que trabalhar nesta organização representa não apenas uma oportunidade profissional, mas também uma forma de contribuir para uma causa humanitária.\nPossuo competências básicas em organização de materiais, controlo de stock e apoio logístico, bem como facilidade de trabalho em equipa, responsabilidade e dedicação no cumprimento das tarefas atribuídas. Tenho ainda disponibilidade para aprender e adaptar-me às exigências do ambiente de trabalho, mantendo sempre o compromisso com a eficiência e a qualidade do serviço",
+                    text = product.description,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -127,13 +160,30 @@ fun ProductScreen(
 @Composable
 fun ProductScreenLigthPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
-        ProductScreen(product = Product (1,"Tenho grande interesse em fazer parte da Save the Children International, uma instituição reconhecida pelo seu impacto positivo na vida das comunidades, especialmente no apoio às crianças e famílias em situação de vulnerabilidade. Acredito que trabalhar nesta organização representa não apenas uma oportunidade profissional, mas também uma forma de contribuir para uma causa humanitária."))
+        ProductScreen(
+            product = ProductDetailResponse (name = "Produto A", id = 1, price = 21.99, pictureUrl = "", createdDate = Date() , description = "Tenho grande interesse em fazer parte da Save the Children International, uma instituição reconhecida pelo seu impacto positivo na vida das comunidades, especialmente no apoio às crianças e famílias em situação de vulnerabilidade. Acredito que trabalhar nesta organização representa não apenas uma oportunidade profissional, mas também uma forma de contribuir para uma causa humanitária.",
+        categoryResponse = CategoryDetailResponse(
+            id = 1,
+            name = ""
+        )
+        )
+        )
+
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ProductScreenDarkPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = true){
-        ProductScreen(product = Product (1,"Teste"))
+        ProductScreen(
+            product = ProductDetailResponse (name = "Produto A", id = 1, price = 21.99, pictureUrl = "", createdDate = Date() , description = "Tenho grande interesse em fazer parte da Save the Children International, uma instituição reconhecida pelo seu impacto positivo na vida das comunidades, especialmente no apoio às crianças e famílias em situação de vulnerabilidade. Acredito que trabalhar nesta organização representa não apenas uma oportunidade profissional, mas também uma forma de contribuir para uma causa humanitária.",
+                categoryResponse = CategoryDetailResponse(
+                    id = 1,
+                    name = ""
+                )
+            )
+        )
+
     }
 }

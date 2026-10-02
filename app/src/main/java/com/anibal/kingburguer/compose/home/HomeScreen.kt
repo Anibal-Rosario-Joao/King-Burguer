@@ -41,23 +41,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.anibal.kingburguer.R
 import com.anibal.kingburguer.common.currency
 import com.anibal.kingburguer.data.CategoryResponse
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 import com.anibal.kingburguer.viewmodels.HomeViewModel
 
-data class Product(
-    val id: Int,
-    val name: String = "",
-    @DrawableRes val picture: Int = R.drawable.example,
-    val price: Double = 20.0
-)
-
-data class Category(
-    val name: String,
-    val products: List <Product>
-)
 
 @Composable
 fun HomeScreen(
@@ -206,7 +196,7 @@ fun HomeScreen(
                                     .widthIn(max = 160.dp)
                                     .padding(start = startPadding, end = endPadding)
                             ) {
-                                Image(
+                                AsyncImage(
                                     modifier = Modifier
                                         .size(140.dp, 180.dp)
                                         .border(
@@ -214,7 +204,9 @@ fun HomeScreen(
                                             RoundedCornerShape(8.dp)
                                         )
                                         .clickable{onProductClickeds(product.id)},
-                                    painter = painterResource(R.drawable.logo),
+
+                                    model = product.pictureUrl,
+                                    placeholder =  painterResource(R.drawable.logo),
                                     contentDescription = product.name
                                 )
                                 Text(

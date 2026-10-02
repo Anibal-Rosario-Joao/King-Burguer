@@ -4,6 +4,7 @@ import com.anibal.kingburguer.BuildConfig
 import com.anibal.kingburguer.data.FeedResponse
 import com.anibal.kingburguer.data.LoginRequest
 import com.anibal.kingburguer.data.LoginResponse
+import com.anibal.kingburguer.data.ProductDetailResponse
 import com.anibal.kingburguer.data.RefreshTokenRequest
 import com.anibal.kingburguer.data.UserCreateResponse
 import com.anibal.kingburguer.data.UserRequest
@@ -18,6 +19,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface KingBurguerService {
     // @GET("kingburguer")
@@ -46,6 +48,12 @@ interface KingBurguerService {
         @Body request: RefreshTokenRequest,
         @Header("Authorization") token: String
     ): Response<LoginResponse>
+
+    @GET("products/{id}")
+    suspend fun fetchProductById(
+        @Header("Authorization") token: String,
+        @Path("id") productId: Int
+    ): Response<ProductDetailResponse>
 
     companion object{
         private const val  BASE_URL = "https://hades.tiagoaguiar.co/kingburguer/"
