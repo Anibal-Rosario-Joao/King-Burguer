@@ -2,8 +2,7 @@ package com.anibal.kingburguer.data
 
 import com.google.gson.annotations.SerializedName
 
-sealed class LoginResponse{
-    data class Sucess(
+data class LoginResponse(
         @SerializedName("access_token")
         val accessToken: String,
         @SerializedName("refresh_token")
@@ -12,9 +11,10 @@ sealed class LoginResponse{
         val expiresSeconds: Double,
         @SerializedName("token_type")
         val tokenType: String
-    ): LoginResponse()
-    data class Error(val detail: String): LoginResponse()
-    data class ErrorAuth(val detail: ErrorDetail): LoginResponse()
-}
+    )
+//    data class Error(val detail: String): LoginResponse()
+//    data class ErrorAuth(val detail: ErrorDetail): LoginResponse()
 
-//data class ErrorDetail(val message: String)
+data class Error(val detail: String)
+data class ErrorAuth(val detail: ErrorDetail)
+//data class ErrorDetail(val message: String) -> deixa

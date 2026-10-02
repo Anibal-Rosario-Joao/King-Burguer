@@ -2,7 +2,9 @@ package com.anibal.kingburguer.api
 
 import com.anibal.kingburguer.BuildConfig
 import com.anibal.kingburguer.data.LoginRequest
+import com.anibal.kingburguer.data.LoginResponse
 import com.anibal.kingburguer.data.RefreshTokenRequest
+import com.anibal.kingburguer.data.UserCreateResponse
 import com.anibal.kingburguer.data.UserRequest
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
@@ -24,19 +26,19 @@ interface KingBurguerService {
     suspend fun postUser(
         @Body userRequest: UserRequest,
         @Header ("x-secret-key") secretKey: String = BuildConfig.X_SECRET_KEY
-    ): Response<ResponseBody>
+    ): Response<UserCreateResponse>
 
     @POST("auth/login")
     suspend fun login(
         @Body loginRequest: LoginRequest,
         @Header("x-secret-key") secretKey: String = BuildConfig.X_SECRET_KEY
-    ): Response<ResponseBody>
+    ): Response<LoginResponse>
 
     @PUT("auth/refresh-token")
     suspend fun refreshToken(
         @Body request: RefreshTokenRequest,
         @Header("Authorization") token: String
-    ): Response<ResponseBody>
+    ): Response<LoginResponse>
 
     companion object{
         private const val  BASE_URL = "https://hades.tiagoaguiar.co/kingburguer/"

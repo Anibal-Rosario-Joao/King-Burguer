@@ -13,6 +13,7 @@ import com.anibal.kingburguer.api.KingBurguerService
 import com.anibal.kingburguer.compose.login.FormState2
 import com.anibal.kingburguer.compose.login.LoginUiState
 import com.anibal.kingburguer.compose.signup.FieldState
+import com.anibal.kingburguer.data.ApiResult
 import com.anibal.kingburguer.data.KingBurguerLocalStorage
 import com.anibal.kingburguer.data.KingBurguerRepository
 import com.anibal.kingburguer.data.LoginRequest
@@ -118,25 +119,12 @@ open class LogInViewModel(
                 // grande poder da sealed class, que é tratar ela com WHEN
 
                 when (result) {
-                    is LoginResponse.Sucess -> {
+                    is ApiResult.Success -> {
                         _uiState.update { it.copy(isLoading = false, goToHome = true) }
                     }
-
-                    is LoginResponse.ErrorAuth -> {
+                    is ApiResult.Error -> {
                         _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = RawString(result.detail.message)
-                            )
-                        }
-                    }
-
-                    is LoginResponse.Error -> {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = RawString(result.detail)
-                            )
+                            it.copy(isLoading = false, error = RawString(result.message))
                         }
                     }
                 }

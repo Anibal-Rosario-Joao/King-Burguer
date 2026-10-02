@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.anibal.kingburguer.api.KingBurguerService
+import com.anibal.kingburguer.data.ApiResult
 import com.anibal.kingburguer.data.KingBurguerLocalStorage
 import com.anibal.kingburguer.data.KingBurguerRepository
 import com.anibal.kingburguer.data.LoginResponse
@@ -34,7 +35,7 @@ class SplashViewModel(
                         Log.d("SplashViewModel", "Token Expirado, tentsndo fazer refresh")
                         val response = repository.refreshToken(RefreshTokenRequest(refreshToken))
                         when(response){
-                            is LoginResponse.Sucess -> true
+                            is ApiResult.Success -> true
                             else -> false
                         }
                     }
