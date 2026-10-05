@@ -16,20 +16,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,12 +38,63 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anibal.kingburguer.R
+import com.anibal.kingburguer.common.formatted
+import com.anibal.kingburguer.compose.product.ProductScreen
+import com.anibal.kingburguer.compose.product.ProductUiState
+import com.anibal.kingburguer.data.ProfileResponse
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
+import com.anibal.kingburguer.validation.Mask
+import com.anibal.kingburguer.viewmodels.ProfileViewModel
+import java.util.Date
+
 
 @Composable
 fun ProfileScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.factory)
+){
+    val state = viewModel.uiState.collectAsState().value
+    ProfileScreen1(modifier, state)
+
+
+}
+
+@Composable
+fun ProfileScreen1(
+    modifier: Modifier,
+    state: ProfileUiState
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            state.isLoading -> {
+                CircularProgressIndicator()
+            }
+
+            state.error != null -> {
+                Text(
+                    text = state.error,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            state.profile != null -> {
+                ProfileScreen2(modifier, state.profile)
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ProfileScreen2(
+    modifier: Modifier,
+    profile: ProfileResponse
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -52,128 +103,94 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            //    .padding(16.dp),
+           // horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            // Header: Foto e Nome
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(50.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Text(
-                text = "Usuario A",
+                text = "Meus Perfil",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 12.dp)
             )
 
-            Text(
-                text = "Membro King Burguer",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Cartão com os detalhes do utilizador
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
-                    ProfileProperty(R.string.prop_id, "2", Icons.Filled.Numbers)
-                    ProfileProperty(R.string.prop_name, "Usuario A", Icons.Filled.Person)
-                    ProfileProperty(R.string.prop_email, "usuarioA@gmail.com", Icons.Filled.Email)
-                    ProfileProperty(R.string.prop_birthday, "24/05/2004", Icons.Filled.Cake, showDivider = false)
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        ProfileProperty(
+                            R.string.prop_id,
+                            profile.id.toString(),
+                            Icons.Filled.Numbers
+                        )
+                        ProfileProperty(R.string.prop_name, profile.name, Icons.Filled.Person)
+                        ProfileProperty(R.string.prop_email, profile.email, Icons.Filled.Email)
+                        ProfileProperty(
+                            R.string.prop_document,
+                            Mask("###.###.###-##", "", profile.document),
+                            Icons.Filled.DocumentScanner
+                        )
+                        ProfileProperty(
+                            R.string.prop_birthday,
+                            profile.birthday.formatted(),
+                            Icons.Filled.Cake,
+                            showDivider = false
+                        )
+                    }
                 }
-            }
+
 
         }
+
     }
 }
 
 @Composable
 private fun ProfileProperty(
     @StringRes key: Int,
-    value: Any,
+    value: String,
     icon: ImageVector,
     showDivider: Boolean = true
 ) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Ícone à esquerda
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(
+                text = stringResource(key),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Textos Empilhados (Rótulo em cima, Valor em baixo)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(key),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = value.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-
-        if (showDivider) {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 40.dp), // Alinha a linha com o texto, saltando o ícone
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
             )
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ProfileScreenLightPreview() {
-    KingBurguerTheme(dynamicColor = false, darkTheme = false) {
-        ProfileScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ProfileScreenDarkPreview() {
-    KingBurguerTheme(dynamicColor = false, darkTheme = true) {
-        ProfileScreen()
+    if (showDivider) {
+        HorizontalDivider(
+            modifier = Modifier.padding(start = 40.dp),
+            thickness = 0.5.dp,
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
     }
 }

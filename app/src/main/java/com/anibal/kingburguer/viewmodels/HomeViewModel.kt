@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.anibal.kingburguer.api.KingBurguerService
+import com.anibal.kingburguer.compose.home.CategoryUiState
+import com.anibal.kingburguer.compose.home.HighlightUiState
 import com.anibal.kingburguer.compose.home.HomeUiState
 import com.anibal.kingburguer.data.ApiResult
 import com.anibal.kingburguer.data.KingBurguerLocalStorage
@@ -28,24 +30,40 @@ class HomeViewModel(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        start()
+        fetchCategories()
+        fetchHighlight()
     }
-    fun start() {
-        _uiState.update {it.copy(isLoading = true)}
+    fun fetchCategories() {
+        _uiState.update {it.copy(categoryUiState = CategoryUiState (isLoading = true))}
         viewModelScope.launch {
             val response = repository.fetchFeed()
             when (response) {
                 is ApiResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, error = response.message) }
+                    val state = CategoryUiState (isLoading = false, error = response.message)
+                    _uiState.update { it.copy(categoryUiState = state) }
                 }
 
                 is ApiResult.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            categories = response.data.categories
-                        )
-                    }
+                    val state = CategoryUiState(isLoading = false, categories = response.data.categories)
+                    _uiState.update { it.copy(categoryUiState = state) }
+                }
+            }
+        }
+    }
+
+    fun fetchHighlight() {
+        _uiState.update {it.copy(highlightUiState = HighlightUiState (isLoading = true))}
+        viewModelScope.launch {
+            val response = repository.fetchHighlight()
+            when (response) {
+                is ApiResult.Error -> {
+                    val state = HighlightUiState (isLoading = false, error = response.message)
+                    _uiState.update { it.copy(highlightUiState = state) }
+                }
+
+                is ApiResult.Success -> {
+                    val state = HighlightUiState(isLoading = false, product = response.data)
+                    _uiState.update { it.copy(highlightUiState = state) }
                 }
             }
         }

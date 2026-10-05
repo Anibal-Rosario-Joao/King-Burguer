@@ -17,12 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
@@ -40,13 +41,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.anibal.kingburguer.R
 import com.anibal.kingburguer.common.currency
 import com.anibal.kingburguer.data.CategoryResponse
+import com.anibal.kingburguer.data.HighlightProductResponse
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 import com.anibal.kingburguer.viewmodels.HomeViewModel
+import java.util.Date
 
 
 @Composable
@@ -64,11 +68,28 @@ fun HomeScreen(
     modifier: Modifier,
     state: HomeUiState,
     onProductClicked: (Int) -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
+    ) {
+        HighlightView( state = state.highlightUiState,onProductClicked)
+        CategoriesView( state = state.categoryUiState,onProductClicked)
+    }
+}
+
+@Composable
+private fun HighlightView(
+    state: HighlightUiState,
+    onProductClicked: (Int) -> Unit
 ){
     Box(
-        modifier = modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.BottomCenter
     ){
         when{
             state.isLoading ->{
@@ -80,8 +101,70 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+            state.product != null ->{
+                Box(
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(230.dp),
+                        model = state.product.pictureUrl,
+                        placeholder = painterResource(R.drawable.logo),
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Button(
+                        modifier = Modifier
+                            .padding(bottom = 12.dp),
+                        elevation = ButtonDefaults.elevatedButtonElevation(
+                            defaultElevation = 6.dp
+                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        onClick = {
+                            onProductClicked(state.product.productId)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.show_more),
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoriesView(
+    state: CategoryUiState,
+    onProductClicked: (Int) -> Unit
+    ){
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        when{
+            state.isLoading ->{
+                CircularProgressIndicator()
+            }
+            state.error != null ->{
+                Text(
+                    //text = state.error
+                    text = stringResource(R.string.erro_message),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
+                )
+            }
             else ->{
-                HomeScreen(modifier = modifier, categories =state.categories, onProductClickeds = onProductClicked)
+                HomeScreen(modifier = Modifier, categories =state.categories, onProductClickeds = onProductClicked)
             }
         }
     }
@@ -95,73 +178,6 @@ fun HomeScreen(
    categories: List<CategoryResponse>,
     onProductClickeds: (Int) -> Unit
 ){
-//    val categories = listOf(
-//        Category(
-//            "Sobremesa",
-//            listOf(
-//                Product(1,"Sobremesa 1"),
-//                Product(2,"Sobremesa 2"),
-//                Product(3,"Sobremesa 3"),
-//                Product(4,"Sobremesa 4")
-//            )
-//        ),
-//        Category(
-//            "Vegetariano",
-//            listOf(
-//                Product(5,"Vegetariano 1"),
-//                Product(6,"Vegetariano 2"),
-//                Product(7,"Vegetariano 3"),
-//                Product(8,"Vegetariano 4")
-//            )
-//        ),
-//        Category(
-//            "Bovino",
-//            listOf(
-//                Product(9,"Bovino 1"),
-//                Product(10,"Bovino 2"),
-//                Product(11,"Bovino 3"),
-//                Product(12,"Bovino 4"),
-//                Product(13,"Bovinho 5")
-//            )
-//        ),
-//    )
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Box(
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(230.dp)
-                    .background(Color.Blue),
-                painter = painterResource(R.drawable.highlight),
-                contentDescription = "",
-                contentScale = ContentScale.Crop
-            )
-
-            Button(
-                modifier = Modifier
-                    .padding(bottom = 12.dp),
-                elevation = ButtonDefaults.elevatedButtonElevation(
-                    defaultElevation = 6.dp
-                ),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                onClick = {}
-            ) {
-                Text(
-                    text = stringResource(R.string.get_coupon),
-                    color = Color.White
-                )
-            }
-        }
-
         LazyColumn(
             modifier = Modifier.fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
@@ -237,7 +253,6 @@ fun HomeScreen(
                 }
             }
         }
-    }
 }
 
 
@@ -245,7 +260,9 @@ fun HomeScreen(
 @Composable
 fun HomeScreenLoadingPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
-        val state = HomeUiState(isLoading = true)
+        val state = HomeUiState(
+            categoryUiState = CategoryUiState(isLoading = true)
+        )
         HomeScreen(modifier = Modifier.fillMaxSize(), state){}
     }
 }
@@ -253,7 +270,9 @@ fun HomeScreenLoadingPreview() {
 @Composable
 fun HomeScreenPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
-        val state = HomeUiState(error = "Erro de teste !!!!!")
+        val state = HomeUiState(
+            categoryUiState = CategoryUiState(error = "Erro de teste !!!!!")
+        )
         HomeScreen(modifier = Modifier.fillMaxSize(), state){}
     }
 }
@@ -262,7 +281,27 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreenEmptyPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
-        val state = HomeUiState(categories = emptyList())
+        val state = HomeUiState(
+            categoryUiState = CategoryUiState(categories = emptyList())
+        )
+        HomeScreen(modifier = Modifier.fillMaxSize(), state){}
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LightHightlightPreview() {
+    KingBurguerTheme (dynamicColor = false, darkTheme = false){
+        val state = HomeUiState(
+            highlightUiState = HighlightUiState(
+                product = HighlightProductResponse(
+                    id = 0,
+                    productId = 0,
+                    pictureUrl = "https://pracehold.co/600x400",
+                    createdDate = Date()
+                )
+            )
+        )
         HomeScreen(modifier = Modifier.fillMaxSize(), state){}
     }
 }

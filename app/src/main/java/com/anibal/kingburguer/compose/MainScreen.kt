@@ -3,11 +3,14 @@ package com.anibal.kingburguer.compose
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
+//import androidx.compose.material.BottomNavigation
+//import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -16,9 +19,13 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -33,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -53,6 +61,7 @@ import com.anibal.kingburguer.ui.theme.KingBurguerTheme
 fun MainScreen(
     //navController: NavHostController,
    // viewModel: HomeViewModel = viewModel()
+    modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
     var titleTopBarId by remember { mutableStateOf(R.string.menu_home) }
@@ -66,11 +75,13 @@ fun MainScreen(
         }
     }
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = modifier
+                .fillMaxSize(),
         contentColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
+             //   modifier = Modifier
+                  //  .padding(top = contentPadding.calculateTopPadding()),
                 title = {
                     Text(
                         text = stringResource(titleTopBarId),
@@ -79,20 +90,14 @@ fun MainScreen(
                 },
                 navigationIcon = {
                     Icon(
+                        modifier = modifier
+                            .size(72.dp),
                         painter = painterResource(R.drawable.logo),
                         contentDescription = stringResource(R.string.app_name),
                         tint = Color.Unspecified
                     )
                 },
                 actions = {
-                    IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
-                        }
-
                     IconButton(onClick = {}) {
                             Icon(
                                 imageVector = Icons.Filled.PowerSettingsNew,
@@ -102,6 +107,9 @@ fun MainScreen(
                         }
 
                 },
+//                backgroundColor = MaterialTheme.colorScheme.primary,
+//                contentColor = MaterialTheme.colorScheme.onPrimary,
+
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
@@ -156,12 +164,7 @@ fun MainContentScreen(
         }
 
         composable (Screen.PROFILE.route){
-            ProfileScreen(
-//                modifier = Modifier.padding(
-//                    top = contentPadding.calculateTopPadding(),
-//                    bottom = contentPadding.calculateBottomPadding()
-//                )
-            )
+            ProfileScreen()
         }
 
         composable (
@@ -170,7 +173,9 @@ fun MainContentScreen(
                 navArgument("productId"){type = NavType.IntType}
             )
         ){
-            ProductScreen(modifier = Modifier)
+            ProductScreen(
+                modifier = Modifier,
+                onBackClicked = { navController.popBackStack() })
         }
     }
 }
@@ -198,14 +203,14 @@ fun MainBottomNavigation(
         )
     )
 
-    BottomNavigation(
-        backgroundColor = MaterialTheme.colorScheme.background
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.background
     ) {
-        val navBackStackEntry  by navController.currentBackStackEntryAsState()
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
         navigationItems.forEach { item ->
-            BottomNavigationItem(
+            NavigationBarItem(
                 selected = currentRoute == item.router.route,
                 onClick = {
                     if(currentRoute != item.router.route) {
@@ -228,9 +233,13 @@ fun MainBottomNavigation(
                 label = {
                     Text(stringResource(item.title))
                 },
-                unselectedContentColor = MaterialTheme.colorScheme.onSurface,
-                selectedContentColor = MaterialTheme.colorScheme.primary
-
+                colors = NavigationBarItemDefaults.colors(
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                )
             )
         }
     }

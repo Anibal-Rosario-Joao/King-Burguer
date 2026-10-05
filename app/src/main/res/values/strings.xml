@@ -37,8 +37,12 @@
     <string name="menu_profile">Perfil</string>
     <string name="menu_coupon">Cupom</string>
     <string name="get_coupon">Resgatar Coupon</string>
+    <string name="show_more">Saiba mais</string>
     <string name="prop_id">Identificador</string>
     <string name="prop_name">Nome</string>
     <string name="prop_email">E-mail</string>
     <string name="prop_birthday">Data de Nascimento</string>
+    <string name="prop_document">NUIT</string>
+    <string name="coupon_generated">Cupom gerado: %s. \n Vocé também pode consultar o seus cupons na aba Cupons</string>
+    <string name="erro_message">Sem acesso a internet!\nVerifique a conecção a internet</string>
 </resources>

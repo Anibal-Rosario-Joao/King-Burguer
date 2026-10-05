@@ -26,6 +26,12 @@ class KingBurguerRepository (
 
     }
 
+    suspend fun fetcnMe(): ApiResult<ProfileResponse>{
+        val userCredencials = localStorage.fetchInitialUserCredential()
+        val token = "${userCredencials.tokenTypes} ${userCredencials.accessToken}"
+        return apiCall { service.fetchMe(token) }
+    }
+
     suspend fun fetchProductById(productId: Int): ApiResult<ProductDetailResponse>{
         val userCredencials = localStorage.fetchInitialUserCredential()
         val token = "${userCredencials.tokenTypes} ${userCredencials.accessToken}"
@@ -60,6 +66,27 @@ class KingBurguerRepository (
             updateCredencials(result.data)
         }
             return result
+    }
+
+    suspend fun createCoupon(productId: Int): ApiResult<CouponResponse>{
+        val userCredencials = localStorage.fetchInitialUserCredential()
+        val token = "${userCredencials.tokenTypes} ${userCredencials.accessToken}"
+        return  apiCall { service.createCoupon( token, productId) }
+    }
+
+    suspend fun fetchCoupons(
+        page: Int = 0,
+        expired: Boolean? = null
+    ): ApiResult<List<CouponResponse>> {
+        val userCredentials = localStorage.fetchInitialUserCredential()
+        val token = "${userCredentials.tokenTypes} ${userCredentials.accessToken}"
+        return apiCall { service.fetchCoupons(token, page, expired) }
+    } // verificar depos
+
+    suspend fun fetchHighlight(): ApiResult<HighlightProductResponse>{
+        val userCredentials = localStorage.fetchInitialUserCredential()
+        val token = "${userCredentials.tokenTypes} ${userCredentials.accessToken}"
+        return apiCall { service.fetchHighlight(token) }
     }
 
     private suspend fun <T> apiCall(

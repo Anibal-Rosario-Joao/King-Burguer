@@ -56,4 +56,3 @@ coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", versi
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-

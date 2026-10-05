@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.anibal.kingburguer.common.currency
+import com.anibal.kingburguer.component.KingAlert
 import com.anibal.kingburguer.component.KingButton
 import com.anibal.kingburguer.data.CategoryDetailResponse
 import com.anibal.kingburguer.data.ProductDetailResponse
@@ -43,16 +46,27 @@ import java.util.Date
 @Composable
 fun ProductScreen(
     modifier: Modifier,
-   viewModel: ProductViewModel = viewModel(factory = ProductViewModel.factory)
+   viewModel: ProductViewModel = viewModel(factory = ProductViewModel.factory),
+    onBackClicked: () -> Unit
 ){
     val state = viewModel.uiState.collectAsState().value
-    ProductScreen(modifier, state)
+    ProductScreen(
+        modifier, state,
+        couponClicked = { viewModel.createCoupon() },
+        onCouponGenerated = {
+            viewModel.reset()
+        onBackClicked()
+        }
+    )
 }
 
 @Composable
 fun ProductScreen(
     modifier: Modifier,
-    state: ProductUiState
+    state: ProductUiState,
+    couponClicked: () -> Unit,
+    onCouponGenerated: () -> Unit,
+
 ){
     Box(
         modifier = Modifier
@@ -69,8 +83,22 @@ fun ProductScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            else -> {
-                ProductScreen(modifier, state)
+            else ->{
+
+                state.productDetail?.let{
+                    ProductScreen(modifier, state.productDetail, couponClicked )
+                }
+                state.coupon?.let{
+                    KingAlert(
+                        onDismissRequest = { /*TODO*/ },
+                        confirmationButton = onCouponGenerated,
+                        dialogTitle = stringResource(R.string.app_name),
+                        dialogText = stringResource(R.string.coupon_generated, state.coupon.coupon),
+                        Icons.Filled.Info
+
+                    )
+                }
+
             }
         }
     }
@@ -79,7 +107,8 @@ fun ProductScreen(
 @Composable
 fun ProductScreen(
     modifier: Modifier = Modifier,
-    product: ProductDetailResponse
+    product: ProductDetailResponse,
+    couponClicked: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Surface(
@@ -150,8 +179,9 @@ fun ProductScreen(
             KingButton(
                 modifier = Modifier
                     .padding(horizontal = 24.dp),
-                text = stringResource(R.string.get_coupon)
-            ) { }
+                text = stringResource(R.string.get_coupon),
+                onClick =  couponClicked
+            )
         }
     }
 }
@@ -167,7 +197,7 @@ fun ProductScreenLigthPreview() {
             name = ""
         )
         )
-        )
+        ){}
 
     }
 }
@@ -183,7 +213,7 @@ fun ProductScreenDarkPreview() {
                     name = ""
                 )
             )
-        )
+        ){}
 
     }
 }
