@@ -51,7 +51,13 @@ fun KingBurguerNavHost(
                 })
         }
         composable (Screen.MAIN.route){
-            MainScreen()
+            MainScreen(){
+                navController.navigate(Screen.LOGIN.route){
+                    popUpTo(Screen.MAIN.route){
+                        inclusive = true
+                    }
+                }
+            }
         }
     }
 

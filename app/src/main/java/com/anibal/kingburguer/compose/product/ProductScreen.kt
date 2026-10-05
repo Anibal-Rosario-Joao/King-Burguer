@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.anibal.kingburguer.common.currency
@@ -79,8 +80,12 @@ fun ProductScreen(
             }
             state.error != null ->{
                 Text(
-                    text = state.error,
-                    color = MaterialTheme.colorScheme.primary
+                    //text = state.error
+                    text = stringResource(R.string.erro_message),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
                 )
             }
             else ->{

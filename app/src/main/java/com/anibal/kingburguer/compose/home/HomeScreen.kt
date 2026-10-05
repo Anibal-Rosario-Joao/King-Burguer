@@ -97,7 +97,7 @@ private fun HighlightView(
             }
             state.error != null ->{
                 Text(
-                    text = state.error,
+                    text = "",//state.error,
                     color = MaterialTheme.colorScheme.primary
                 )
             }

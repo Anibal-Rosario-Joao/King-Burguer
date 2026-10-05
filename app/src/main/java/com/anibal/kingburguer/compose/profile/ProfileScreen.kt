@@ -36,8 +36,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.anibal.kingburguer.R
 import com.anibal.kingburguer.common.formatted
@@ -78,8 +80,12 @@ fun ProfileScreen1(
 
             state.error != null -> {
                 Text(
-                    text = state.error,
-                    color = MaterialTheme.colorScheme.primary
+                    //text = state.error
+                    text = stringResource(R.string.erro_message),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
                 )
             }
 

@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-//import androidx.compose.material.BottomNavigation
-//import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -30,6 +28,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -55,13 +55,30 @@ import com.anibal.kingburguer.compose.home.HomeScreen
 import com.anibal.kingburguer.compose.product.ProductScreen
 import com.anibal.kingburguer.compose.profile.ProfileScreen
 import com.anibal.kingburguer.ui.theme.KingBurguerTheme
+import com.anibal.kingburguer.viewmodels.MainViewModel
+
+@Composable
+fun MainScreen(
+    viewModel: MainViewModel = viewModel(factory = MainViewModel.foctory),
+    onNavigationToLogin:() -> Unit
+){
+    val shouldQuit = viewModel.uiState.collectAsState().value
+    if (shouldQuit) {
+        viewModel.reset()
+        onNavigationToLogin()
+    }
+    MainScreen(
+        onLogoutClicked = {
+            viewModel.logout()
+        }
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    //navController: NavHostController,
-   // viewModel: HomeViewModel = viewModel()
-    modifier: Modifier = Modifier
+    onLogoutClicked:() -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
     var titleTopBarId by remember { mutableStateOf(R.string.menu_home) }
@@ -98,7 +115,7 @@ fun MainScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {onLogoutClicked()}) {
                             Icon(
                                 imageVector = Icons.Filled.PowerSettingsNew,
                                 contentDescription = null,
@@ -249,13 +266,13 @@ fun MainBottomNavigation(
 @Composable
 fun MainScreenLigthPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = false){
-        MainScreen()
+        MainScreen(onLogoutClicked = {})
     }
 }
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainScreenDarkPreview() {
     KingBurguerTheme (dynamicColor = false, darkTheme = true){
-        MainScreen()
+        MainScreen(onLogoutClicked = {})
     }
 }
