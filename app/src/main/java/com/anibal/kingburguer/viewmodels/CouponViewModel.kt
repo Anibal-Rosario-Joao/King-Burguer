@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import  com.anibal.kingburguer.common.toCoupon
 
 class CouponViewModel(
     private val repository: KingBurguerRepository
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow(CouponUiState())
     val uiState: StateFlow<CouponUiState> = _uiState.asStateFlow()
 
@@ -35,11 +35,16 @@ class CouponViewModel(
                     _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
                 is ApiResult.Success -> {
-                    _uiState.update { it.copy(isLoading = false, coupons = result.data) }
+                    val apiCoupons = result.data
+
+                    val uiCoupons = apiCoupons.map { it.toCoupon() }
+
+                    _uiState.update { it.copy(isLoading = false, coupons = uiCoupons) }
                 }
             }
         }
     }
+
 
     companion object {
         val factory = viewModelFactory {

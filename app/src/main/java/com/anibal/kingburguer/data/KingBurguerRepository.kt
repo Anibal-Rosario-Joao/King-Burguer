@@ -74,14 +74,21 @@ class KingBurguerRepository (
         return  apiCall { service.createCoupon( token, productId) }
     }
 
-    suspend fun fetchCoupons(
-        page: Int = 0,
-        expired: Boolean? = null
-    ): ApiResult<List<CouponResponse>> {
-        val userCredentials = localStorage.fetchInitialUserCredential()
-        val token = "${userCredentials.tokenTypes} ${userCredentials.accessToken}"
-        return apiCall { service.fetchCoupons(token, page, expired) }
-    } // verificar depos
+    suspend fun fetchCoupons(page: Int, expired: Boolean?): ApiResult<List<ListCuponResponse>> {
+        return try {
+            val userCredentials = localStorage.fetchInitialUserCredential()
+            val token = "${userCredentials.tokenTypes} ${userCredentials.accessToken}"
+            val response = service.fetchCoupons(token, page, expired)
+            if (response.isSuccessful) {
+                val coupons = response.body()?.data ?: emptyList()
+                ApiResult.Success(coupons)
+            } else {
+                ApiResult.Error("Erro ao buscar cupões")
+            }
+        } catch (e: Exception) {
+            ApiResult.Error(e.message ?: "Erro desconhecido")
+        }
+    }
 
     suspend fun fetchHighlight(): ApiResult<HighlightProductResponse>{
         val userCredentials = localStorage.fetchInitialUserCredential()

@@ -1,6 +1,7 @@
 package com.anibal.kingburguer.api
 
 import com.anibal.kingburguer.BuildConfig
+import com.anibal.kingburguer.data.CouponBaseResponse
 import com.anibal.kingburguer.data.CouponResponse
 import com.anibal.kingburguer.data.FeedResponse
 import com.anibal.kingburguer.data.HighlightProductResponse
@@ -76,7 +77,7 @@ interface KingBurguerService {
         @Header("Authorization") token: String,
         @Query("page") page: Int = 0,
         @Query("expired") expired: Boolean? = null
-    ): Response<List<CouponResponse>> // Vericarei depois
+    ): Response<CouponBaseResponse> // Agora retorna o CouponBaseResponse
 
     @GET("highlight")
     suspend fun fetchHighlight(

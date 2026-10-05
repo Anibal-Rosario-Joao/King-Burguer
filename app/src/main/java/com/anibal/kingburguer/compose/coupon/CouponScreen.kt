@@ -2,7 +2,6 @@ package com.anibal.kingburguer.compose.coupon
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +22,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,31 +30,42 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anibal.kingburguer.ui.theme.KingBurguerTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.anibal.kingburguer.R
+import com.anibal.kingburguer.common.Coupon
+import com.anibal.kingburguer.common.formatted
+import com.anibal.kingburguer.viewmodels.CouponViewModel
 
-// Modelo de dados para o Cupão
-data class Coupon(
-    val id: Int,
-    val productId: Int,
-    val code: String,
-    val expirationAt: String,
-    val createdAt: String
-)
 
 @Composable
 fun CouponScreen(
     modifier: Modifier = Modifier,
-    coupons: List<Coupon> = mockCoupons() // Por defeito usa dados de teste (depois virão do ViewModel)
+    viewModel: CouponViewModel = viewModel(factory = CouponViewModel.factory)
+) {
+
+    // val state = viewModel.uiState.collectAsState().value
+    val state = viewModel.uiState.collectAsState().value
+
+
+    CouponScreen(modifier = modifier,state = state)
+}
+
+@Composable
+fun CouponScreen(
+    modifier: Modifier = Modifier,
+    state: CouponUiState
 ) {
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -62,24 +73,43 @@ fun CouponScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
-            Text(
-                text = "Meus Cupões",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 12.dp)
-            )
+            if (!state.coupons.isEmpty() ){
+                Text(
+                    text = "Meus Cupões",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 12.dp)
+                )
+            }
 
-            if (coupons.isEmpty()) {
-                EmptyCouponState()
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(coupons) { coupon ->
-                        CouponCard(coupon = coupon)
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                when {
+                    state.isLoading -> {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    state.coupons.isEmpty() -> {
+                        Text(
+                            //text = state.error
+                            text = stringResource(R.string.erro_message),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    else -> {
+                        LazyColumn(
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(state.coupons) { coupon ->
+                                CouponCard(coupon = coupon)
+                            }
+                        }
                     }
                 }
             }
@@ -92,7 +122,7 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
     val clipboardManager = LocalClipboardManager.current
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -106,7 +136,6 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Ícone à esquerda
                 Box(
                     modifier = Modifier
                         .size(48.dp)
@@ -122,7 +151,6 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
-
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -155,9 +183,10 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
             ) {
                 Column {
                     Text(
-                        text = "Válido até: ${formatDate(coupon.expirationAt)}",
+                        // Chamada direta à tua função de extensão
+                        text = "Válido até: ${coupon.expirationAt}",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.error // Vermelho para destacar a expiração
+                        color = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.height(4.dp))
 
@@ -174,7 +203,6 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
                             )
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
-
                         Text(
                             text = coupon.code,
                             style = MaterialTheme.typography.titleMedium,
@@ -205,80 +233,39 @@ fun CouponCard(modifier: Modifier = Modifier, coupon: Coupon) {
     }
 }
 
-@Composable
-fun EmptyCouponState() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Filled.LocalOffer,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(80.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Nenhum cupão disponível no momento",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
 
-// Função auxiliar para formatar a data que vem da API
-fun formatDate(dateString: String): String {
-    return try {
-        // Separa a data do tempo ("2025-03-14" e "12:24:19")
-        val parts = dateString.split("T")
-        val dateParts = parts[0].split("-")
-        // Retorna no formato PT: DD/MM/AAAA
-        "${dateParts[2]}/${dateParts[1]}/${dateParts[0]}"
-    } catch (e: Exception) {
-        dateString // Em caso de erro, retorna a string original
-    }
-}
-
-// Função auxiliar de mock (dados fictícios) para os Previews
-fun mockCoupons(): List<Coupon> {
-    return listOf(
-        Coupon(
-            id = 510,
-            productId = 1,
-            code = "FHMQGA",
-            expirationAt = "2025-03-14T12:24:19",
-            createdAt = "2025-02-27T12:24:19"
-        ),
-        Coupon(
-            id = 511,
-            productId = 3,
-            code = "BURGER10",
-            expirationAt = "2025-04-10T23:59:00",
-            createdAt = "2025-02-28T09:10:00"
-        ),
-        Coupon(
-            id = 512,
-            productId = 5,
-            code = "VEGGIEFREE",
-            expirationAt = "2025-03-20T14:30:00",
-            createdAt = "2025-03-01T10:00:00"
-        )
-    )
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CouponScreenLightPreview() {
-    KingBurguerTheme(dynamicColor = false, darkTheme = false) {
-        CouponScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CouponScreenDarkPreview() { // Corrigi o nome da função que estava ProfileScreenDarkPreview
-    KingBurguerTheme(dynamicColor = false, darkTheme = true) {
-        CouponScreen()
-    }
-}
+// Os Previews continuam a funcionar utilizando o CouponScreen isolado, injetando dados de teste
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun CouponScreenLightPreview() {
+//    KingBurguerTheme(dynamicColor = false, darkTheme = false) {
+//        CouponScreen(coupons = mockCoupons(), isLoading = false)
+//    }
+//}
+//
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun CouponScreenLoadingPreview() {
+//    KingBurguerTheme(dynamicColor = false, darkTheme = false) {
+//        CouponScreen(coupons = emptyList(), isLoading = true)
+//    }
+//}
+//
+//fun mockCoupons(): List<Coupon> {
+//    return listOf(
+//        Coupon(
+//            id = 510,
+//            productId = 1,
+//            code = "FHMQGA",
+//            expirationAt = "2025-03-14T12:24:19",
+//            createdAt = "2025-02-27T12:24:19"
+//        ),
+//        Coupon(
+//            id = 511,
+//            productId = 3,
+//            code = "BURGER10",
+//            expirationAt = "2025-04-10T23:59:00",
+//            createdAt = "2025-02-28T09:10:00"
+//        )
+//    )
+//}
